@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 17, 24, 39;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.dark-card {
+  @apply bg-gray-800 border border-gray-700;
+}
+
+.dark-input {
+  @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+}
+
+.dark-table {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark-table-row {
+  @apply border-gray-700;
+}
