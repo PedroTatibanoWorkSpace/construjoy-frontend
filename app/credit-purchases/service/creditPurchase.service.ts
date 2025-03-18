@@ -1,35 +1,29 @@
 import api from '../../../services/api/apiConfig';
+import { CreditPurchase } from '../entities/credit-purchase.entity';
 
-export const findAllCreditPurchases = async () => {
-  const response = await api.get('/credit-purchases');
-  return response.data;
+export const findAllCreditPurchases = async (): Promise<CreditPurchase[]> => {
+  const response = await api.get('/receivables');
+  return response.data.data;
 };
 
-export const findOneCreditPurchase = async (id: string) => {
-  const response = await api.get(`/credit-purchases/${id}`);
-  return response.data;
+export const findOneCreditPurchase = async (id: string): Promise<CreditPurchase> => {
+  const response = await api.get(`/receivables/${id}`);
+  return response.data.data;
 };
 
-export const createCreditPurchase = async (data: {
-  customerId: string;
-  amount: number;
-  description: string;
-  purchaseDate: string;
-  dueDate: string;
-}) => {
-  const response = await api.post('/credit-purchases', data);
-  return response.data;
+export const createCreditPurchase = async (creditPurchase: CreditPurchase): Promise<CreditPurchase> => {
+  const response = await api.post('/receivables', creditPurchase);
+  return response.data.data;
 };
 
 export const updateCreditPurchase = async (
   id: string,
-  data: Partial<typeof createCreditPurchase>
-) => {
-  const response = await api.put(`/credit-purchases/${id}`, data);
-  return response.data;
+  data: Partial<CreditPurchase>
+): Promise<CreditPurchase> => {
+  const response = await api.patch(`/receivables/${id}`, data);
+  return response.data.data;
 };
 
-export const deleteCreditPurchase = async (id: string) => {
-  const response = await api.delete(`/credit-purchases/${id}`);
-  return response.data;
+export const deleteCreditPurchase = async (id: string): Promise<void> => {
+  await api.delete(`/receivables/${id}`);
 };

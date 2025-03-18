@@ -1,15 +1,35 @@
 "use client";
 
 import React, { useState } from "react";
-import { useCustomers, useCreateCustomer, useUpdateCustomer, useDeleteCustomer } from "../service/reactQuery/customer.query";
-import { Customer } from "../service/entity/customers.entity";
+import {
+  useCustomers,
+  useCreateCustomer,
+  useUpdateCustomer,
+  useDeleteCustomer,
+} from "../service/reactQuery/customer.query";
+import { Customer } from "../entities/customers.entity";
 import { formatDate } from "../../utils/format";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import NewCustomerModal from "./modals/NewCustomerModal";
 import { EditCustomerModal } from "./modals/EditCustomerModal";
 import { DeleteCustomerModal } from "./modals/DeleteCustomerModal";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination";
 
 export default function CustomerList() {
   const { data: customers = [], isLoading, error } = useCustomers();
@@ -19,11 +39,35 @@ export default function CustomerList() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const sortedCustomers = [...customers].sort((a, b) => {
+    const aId = a.internalId ? Number(a.internalId) : 0;
+    const bId = b.internalId ? Number(b.internalId) : 0;
+    return aId - bId;
+  });
+
+  const filteredCustomers = sortedCustomers.filter(
+    (customer) =>
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.document.includes(searchTerm) ||
+      customer.email.toLowerCase().includes(searchTerm) ||
+      customer.phone.includes(searchTerm)
+  );
+
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const paginatedCustomers = filteredCustomers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const handlePrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
+
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const itemsPerPage = 10;
 
   const handleOpenNewModal = () => setIsNewModalOpen(true);
   const handleCloseNewModal = () => setIsNewModalOpen(false);
@@ -50,35 +94,25 @@ export default function CustomerList() {
   };
 
   const handleUpdateCustomer = (updatedCustomer: Partial<Customer>) => {
-    if (selectedCustomer && selectedCustomer.id) {
+    if (selectedCustomer?.id) {
       updateCustomerMutation.mutate({ id: selectedCustomer.id, data: updatedCustomer });
       setIsEditModalOpen(false);
     }
   };
 
   const handleDeleteCustomer = () => {
-    if (selectedCustomer && selectedCustomer.id) {
+    if (selectedCustomer?.id) {
       deleteCustomerMutation.mutate(selectedCustomer.id);
       setIsDeleteModalOpen(false);
     }
   };
-
-  const filteredCustomers = customers.filter(
-    (customer) =>
-      customer?.name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-      customer?.document?.includes(searchTerm) ||
-      customer?.email?.toLowerCase()?.includes(searchTerm)
-  );
-
-  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage);
 
   if (isLoading) return <div>Carregando...</div>;
   if (error) return <div>Erro ao carregar clientes</div>;
 
   return (
     <div className="space-y-4">
+
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -89,10 +123,13 @@ export default function CustomerList() {
             placeholder="Buscar por nome, documento ou email..."
             className="dark-input block w-full pl-10 pr-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
-        <Button onClick={handleOpenNewModal} className="bg-blue-600 text-white hover:bg-blue-700">
+        <Button onClick={handleOpenNewModal} className="bg-blue-600 text-white hover:bg-blue-800">
           Novo Cliente
         </Button>
       </div>
@@ -120,7 +157,7 @@ export default function CustomerList() {
                 <TableCell>
                   <Button
                     size="sm"
-                    className="bg-blue-800 text-white hover:bg-blue-900 mr-2"
+                    className="bg-gray-700 text-white hover:bg-gray-800 mr-2"
                     onClick={() => handleOpenEditModal(customer)}
                   >
                     Editar
@@ -128,7 +165,7 @@ export default function CustomerList() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    className="hover:bg-red-700"
+                    className="bg-red-600 text-white hover:bg-red-800"
                     onClick={() => handleOpenDeleteModal(customer)}
                   >
                     Excluir
@@ -141,20 +178,57 @@ export default function CustomerList() {
       </div>
 
       {totalPages > 1 && (
-        <div className="px-6 py-4 flex items-center justify-between border-t border-gray-700">
-          <Button variant="outline" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1}>
-            Anterior
-          </Button>
-          <span className="text-gray-300">Página {currentPage} de {totalPages}</span>
-          <Button variant="outline" onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))} disabled={currentPage === totalPages}>
-            Próxima
-          </Button>
-        </div>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={currentPage === 1 ? undefined : handlePrevPage}
+                className={`${
+                  currentPage === 1 ? "opacity-50 pointer-events-none" : "bg-gray-700 text-white hover:bg-gray-800"
+                }`}
+              >
+              </PaginationPrevious>
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => {
+              const page = index + 1;
+              return (
+                <PaginationItem key={page}>
+                  <Button
+                    variant={currentPage === page ? "default" : "outline"}
+                    className={currentPage === page ? "bg-white text-black" : "bg-gray-600 text-white hover:bg-gray-700"}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                </PaginationItem>
+              );
+            })}
+            <PaginationItem>
+              <PaginationNext
+                onClick={currentPage === totalPages ? undefined : handleNextPage}
+                className={`${
+                  currentPage === totalPages ? "opacity-50 pointer-events-none" : "bg-gray-700 text-white hover:bg-gray-800"
+                }`}
+              >
+                Próxima
+              </PaginationNext>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
-      
+
       <NewCustomerModal isOpen={isNewModalOpen} onClose={handleCloseNewModal} onAddCustomer={handleAddCustomer} />
-      <EditCustomerModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} customer={selectedCustomer} onSave={handleUpdateCustomer} />
-      <DeleteCustomerModal isOpen={isDeleteModalOpen} onClose={handleCloseDeleteModal} onConfirm={handleDeleteCustomer} />
+      <EditCustomerModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        customer={selectedCustomer}
+        onSave={handleUpdateCustomer}
+      />
+      <DeleteCustomerModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleDeleteCustomer}
+      />
     </div>
   );
 }

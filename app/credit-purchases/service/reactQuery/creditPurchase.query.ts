@@ -6,13 +6,15 @@ import {
   updateCreditPurchase,
   deleteCreditPurchase,
 } from '../creditPurchase.service';
+import { CreditPurchase } from '../../entities/credit-purchase.entity';
+import { UpdateCreditPurchaseInput } from '../../types/credit-purchase.type';
 
 export const useCreditPurchases = () => {
-  return useQuery('creditPurchases', findAllCreditPurchases);
+  return useQuery<CreditPurchase[]>('creditPurchases', findAllCreditPurchases);
 };
 
 export const useCreditPurchase = (id: string) => {
-  return useQuery(['creditPurchase', id], () => findOneCreditPurchase(id));
+  return useQuery<CreditPurchase>(['creditPurchase', id], () => findOneCreditPurchase(id));
 };
 
 export const useCreateCreditPurchase = () => {
@@ -24,11 +26,11 @@ export const useCreateCreditPurchase = () => {
   });
 };
 
+
 export const useUpdateCreditPurchase = () => {
   const queryClient = useQueryClient();
   return useMutation(
-    ({ id, data }: { id: string; data: Partial<Parameters<typeof createCreditPurchase>[0]> }) =>
-      updateCreditPurchase(id, data as any), // Adicionado `as any` para evitar erro de tipo
+    ({ id, data }: UpdateCreditPurchaseInput) => updateCreditPurchase(id, data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('creditPurchases');
