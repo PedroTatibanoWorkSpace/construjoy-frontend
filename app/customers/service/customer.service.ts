@@ -1,5 +1,5 @@
 import api from "../../../services/api/apiConfig";
-import { Customer } from "./entity/customers.entity";
+import { Customer } from "../entities/customers.entity";
 
 export const findAllCustomers = async (): Promise<Customer[]> => {
   const response = await api.get("/clients");

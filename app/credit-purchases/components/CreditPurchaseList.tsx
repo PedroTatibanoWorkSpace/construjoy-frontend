@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { CreditPurchase, Customer } from "../../types";
+import { useCreditPurchases } from "../service/reactQuery/creditPurchase.query";
 import { formatCurrency, formatDate } from "../../utils/format";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
@@ -15,61 +15,13 @@ import {
 import { Button } from "@/components/ui/button";
 import NewCreditPurchaseModal from "./NewCreditPurchaseModal";
 
-// Mock data
-const mockCustomers: Customer[] = [
-  {
-    id: "1",
-    fullName: "João Silva",
-    cpf: "123.456.789-00",
-    address: "Rua Principal, 123",
-    phone: "(11) 98765-4321",
-    email: "joao@exemplo.com",
-    registrationDate: new Date("2023-01-01"),
-  },
-  {
-    id: "2",
-    fullName: "Pedro Silva",
-    cpf: "123.456.789-00",
-    address: "Rua Principal, 123",
-    phone: "(11) 98765-4321",
-    email: "joao@exemplo.com",
-    registrationDate: new Date("2023-01-01"),
-  }
-  
-];
-
-const mockPurchases: CreditPurchase[] = [
-  {
-    id: "1",
-    customerId: "1",
-    amount: 1000,
-    description: "Compra de materiais",
-    purchaseDate: new Date("2023-08-01"),
-    dueDate: new Date("2023-09-05"),
-    status: "pending",
-  },
-];
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case "paid":
-      return "Pago";
-    case "pending":
-      return "Pendente";
-    case "overdue":
-      return "Atrasado";
-    default:
-      return status;
-  }
-};
-
 const getStatusClass = (status: string) => {
   switch (status) {
-    case "paid":
+    case "Pago":
       return "bg-green-600 text-white";
-    case "pending":
+    case "Pendente":
       return "bg-yellow-600 text-black";
-    case "overdue":
+    case "Atrasado":
       return "bg-red-600 text-white";
     default:
       return "bg-gray-600 text-white";
@@ -77,18 +29,19 @@ const getStatusClass = (status: string) => {
 };
 
 export default function CreditPurchaseList() {
+  const { data: purchases = [], isLoading } = useCreditPurchases();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  console.log("data", purchases)
   const itemsPerPage = 10;
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const filteredPurchases = mockPurchases.filter((purchase) => {
-    const customer = mockCustomers.find((c) => c.id === purchase.customerId);
+  const filteredPurchases = purchases.filter((purchase) => {
     return (
-      customer?.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       purchase.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
@@ -109,7 +62,7 @@ export default function CreditPurchaseList() {
           </div>
           <input
             type="text"
-            placeholder="Buscar por cliente ou descrição..."
+            placeholder="Buscar por descrição..."
             className="dark-input block w-full pl-10 pr-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -127,35 +80,40 @@ export default function CreditPurchaseList() {
         <Table className="hover:bg-transparent">
           <TableHeader>
             <TableRow>
-              <TableHead>Cliente</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead>Valor</TableHead>
-              <TableHead>Data da Compra</TableHead>
-              <TableHead>Vencimento</TableHead>
+              <TableHead>Validade</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Data de Pagamento</TableHead>
               <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedPurchases.map((purchase) => {
-              const customer = mockCustomers.find(
-                (c) => c.id === purchase.customerId
-              );
-              return (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center">
+                  Carregando...
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedPurchases.map((purchase) => (
                 <TableRow key={purchase.id}>
-                  <TableCell>{customer?.fullName}</TableCell>
                   <TableCell>{purchase.description}</TableCell>
-                  <TableCell>{formatCurrency(purchase.amount)}</TableCell>
-                  <TableCell>{formatDate(purchase.purchaseDate)}</TableCell>
-                  <TableCell>{formatDate(purchase.dueDate)}</TableCell>
+                  <TableCell>{formatCurrency(purchase.value)}</TableCell>
+                  <TableCell>{formatDate(purchase.validate)}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 text-xs rounded ${getStatusClass(
-                        purchase.status
+                        purchase.paymentStatus || ""
                       )}`}
                     >
-                      {getStatusText(purchase.status)}
+                      {(purchase.paymentStatus || "")}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    {purchase.paymentDate
+                      ? formatDate(purchase.paymentDate)
+                      : "N/A"}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -174,8 +132,8 @@ export default function CreditPurchaseList() {
                     </Button>
                   </TableCell>
                 </TableRow>
-              );
-            })}
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
@@ -206,7 +164,7 @@ export default function CreditPurchaseList() {
       <NewCreditPurchaseModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        customers={mockCustomers}
+        customers={[]} // Adjust if customer data is needed
       />
     </div>
   );
