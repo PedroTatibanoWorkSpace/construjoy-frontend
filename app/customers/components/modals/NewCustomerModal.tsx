@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Customer } from "../../service/entity/customers.entity";
+import { Customer } from "../../entities/customers.entity";
 
 interface NewCustomerModalProps {
   isOpen: boolean;
