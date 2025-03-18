@@ -5,6 +5,9 @@ export const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('pt-BR').format(date);
+export const formatDate = (date: Date | undefined | null): string => {
+  if (!date || isNaN(new Date(date).getTime())) {
+    return "N/A";
+  }
+  return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
 };
