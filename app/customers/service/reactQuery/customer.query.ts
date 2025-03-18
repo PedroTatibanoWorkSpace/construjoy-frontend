@@ -6,7 +6,8 @@ import {
   updateCustomer,
   deleteCustomer,
 } from "../customer.service";
-import { Customer } from "../entity/customers.entity";
+import { Customer } from "../../entities/customers.entity";
+import { UpdateCustomerInput } from "../../types/customer.type";
 
 export const useCustomers = () => {
   return useQuery<Customer[]>("customers", findAllCustomers);
@@ -16,10 +17,6 @@ export const useCustomer = (id: string) => {
   return useQuery<Customer>(["customer", id], () => findOneCustomer(id));
 };
 
-export interface CreateCustomerInput {
-  customer: Customer;
-}
-
 export const useCreateCustomer = () => {
   const queryClient = useQueryClient();
   return useMutation(createCustomer, {
@@ -28,11 +25,6 @@ export const useCreateCustomer = () => {
     },
   });
 };
-
-export interface UpdateCustomerInput {
-  id: string;
-  data: Partial<Customer>;
-}
 
 export const useUpdateCustomer = () => {
   const queryClient = useQueryClient();
