@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { z } from "zod";
-import { Customer } from "../../types";
+import { Customer } from "../../../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
