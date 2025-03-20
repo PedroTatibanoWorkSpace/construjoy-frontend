@@ -4,3 +4,7 @@ export function formatDate(date: Date): string {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+export const formatDateForSearch = (date: Date): string => {
+  return new Date(date).toLocaleDateString('pt-BR');
+};
