@@ -13,7 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import NewCreditPurchaseModal from "./NewCreditPurchaseModal";
+import NewCreditPurchaseModal from "./modals/NewCreditPurchaseModal";
+import { formatDateForSearch } from "@/utils/format";
 
 const getStatusClass = (status: string) => {
   switch (status) {
@@ -34,15 +35,24 @@ export default function CreditPurchaseList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("data", purchases)
   const itemsPerPage = 10;
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
   const filteredPurchases = purchases.filter((purchase) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const formattedValidate = formatDateForSearch(purchase.validate);
+    const formattedPaymentDate = purchase.paymentDate
+      ? formatDateForSearch(purchase.paymentDate)
+      : "";
+
     return (
-      purchase.description.toLowerCase().includes(searchTerm.toLowerCase())
+      purchase.description.toLowerCase().includes(searchTermLower) ||
+      purchase.client?.name.toLowerCase().includes(searchTermLower) ||
+      purchase.value.toString().includes(searchTerm) ||
+      formattedValidate.includes(searchTerm) ||
+      formattedPaymentDate.includes(searchTerm)
     );
   });
 
@@ -62,7 +72,7 @@ export default function CreditPurchaseList() {
           </div>
           <input
             type="text"
-            placeholder="Buscar por descrição..."
+            placeholder="Buscar por cliente, descrição, valor ou data (dd/mm/aaaa)..."
             className="dark-input block w-full pl-10 pr-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -80,6 +90,7 @@ export default function CreditPurchaseList() {
         <Table className="hover:bg-transparent">
           <TableHeader>
             <TableRow>
+              <TableHead>Cliente</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Validade</TableHead>
@@ -98,6 +109,7 @@ export default function CreditPurchaseList() {
             ) : (
               paginatedPurchases.map((purchase) => (
                 <TableRow key={purchase.id}>
+                  <TableCell>{purchase.client?.name || ""}</TableCell>
                   <TableCell>{purchase.description}</TableCell>
                   <TableCell>{formatCurrency(purchase.value)}</TableCell>
                   <TableCell>{formatDate(purchase.validate)}</TableCell>
@@ -107,13 +119,13 @@ export default function CreditPurchaseList() {
                         purchase.paymentStatus || ""
                       )}`}
                     >
-                      {(purchase.paymentStatus || "")}
+                      {purchase.paymentStatus || ""}
                     </span>
                   </TableCell>
                   <TableCell>
                     {purchase.paymentDate
                       ? formatDate(purchase.paymentDate)
-                      : "N/A"}
+                      : "Não pago"}
                   </TableCell>
                   <TableCell>
                     <Button
