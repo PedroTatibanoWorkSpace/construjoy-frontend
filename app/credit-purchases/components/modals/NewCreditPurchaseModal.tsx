@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { z } from "zod";
-import { Customer } from "../../../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,25 +10,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCustomers } from "@/app/customers/service/reactQuery/customer.query";
+import CurrencyInput from "react-currency-input-field";
+import { creditPurchaseSchema } from "../zod/CreditPurchaseSchema";
+import { CreditPurchase } from "../../entities/credit-purchase.entity";
 
 interface NewCreditPurchaseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  customers: Customer[];
+  onAddCreditPurchase: (creditPurchase: CreditPurchase) => void;
 }
-
-const creditPurchaseSchema = z.object({
-  customerId: z.string().min(1, "Cliente é obrigatório"),
-  amount: z.number().min(1, "Valor deve ser maior que zero"),
-  description: z.string().min(1, "Descrição é obrigatória"),
-  purchaseDate: z.string().min(1, "Data da compra é obrigatória"),
-  dueDate: z.string().min(1, "Data de vencimento é obrigatória"),
-});
 
 const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
   isOpen,
   onClose,
-  customers,
+  onAddCreditPurchase,
 }) => {
   const [customerId, setCustomerId] = useState("");
   const [amount, setAmount] = useState("");
@@ -38,6 +32,7 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
   const [purchaseDate, setPurchaseDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const customers = useCustomers().data || [];
 
   const handleClose = () => {
     setCustomerId("");
@@ -51,18 +46,41 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  
+    const numericAmount = parseFloat(amount.replace(/[^\d,]/g, "").replace(",", "."));
+    const purchaseDateObj = new Date(purchaseDate);
+    const dueDateObj = new Date(dueDate);
+  
     const result = creditPurchaseSchema.safeParse({
-      customerId,
-      amount: parseFloat(amount),
+      clientId: customerId, 
+      value: numericAmount, 
       description,
-      purchaseDate,
-      dueDate,
+      validate: dueDateObj,
+      purchaseDate: purchaseDateObj,
     });
+  
+    if (!result.success) {
+      console.error("Erro de validação:", result.error);
+      const errorMessage = result.error.errors[0]?.message || "Por favor, verifique os campos preenchidos";
+      alert(errorMessage);
+      return;
+    }
+  
+    const newPurchase: CreditPurchase = {
+      clientId: customerId,
+      value: numericAmount,
+      description,
+      validate: dueDateObj,
+      purchaseDate: purchaseDateObj,
+      client: customers.find((c) => c.id === customerId)!,
+    };
+  
+    onAddCreditPurchase(newPurchase);
     handleClose();
   };
 
   const filteredCustomers = customers.filter((customer) =>
-    customer.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!isOpen) return null;
@@ -86,23 +104,27 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
                 <SelectTrigger className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md">
                   <SelectValue>
                     {customerId
-                      ? customers.find((c) => c.id === customerId)?.fullName
+                      ? customers.find((c) => c.id === customerId)?.name
                       : "Selecione um cliente"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md">
-                  <SelectItem value="default" disabled className="text-gray-500">
+                  <SelectItem
+                    value="default"
+                    disabled
+                    className="text-gray-500"
+                  >
                     Selecione um cliente
                   </SelectItem>
                   {filteredCustomers.map((customer) => (
                     <SelectItem
                       key={customer.id}
-                      value={customer.id}
+                      value={customer.id || ""}
                       className={`bg-gray-800 text-gray-100 hover:bg-gray-600 hover:text-gray-100 ${
                         customerId === customer.id ? "bg-gray-600" : ""
                       }`}
                     >
-                      {customer.fullName}
+                      {customer.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -110,11 +132,12 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
             </div>
             <div className="mb-4">
               <Label className="text-sm text-gray-300">Valor</Label>
-              <Input
-                type="number"
-                placeholder="Digite o valor"
+              <CurrencyInput
+                intlConfig={{ locale: "pt-BR", currency: "BRL" }}
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onValueChange={(value) => setAmount(value || "")}
+                placeholder="R$ 0,00"
+                customInput={Input}
                 className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
               />
             </div>
@@ -122,7 +145,7 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
               <Label className="text-sm text-gray-300">Descrição</Label>
               <Input
                 type="text"
-                placeholder="Digite a descrição"
+                placeholder="Picareta..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
