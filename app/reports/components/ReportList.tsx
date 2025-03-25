@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { generateCustomerPDF } from '@/utils/drawnPDF';
+import { generateCustomerPDF } from '@/app/utils/drawnPDF';
 import {
   Table,
   TableBody,

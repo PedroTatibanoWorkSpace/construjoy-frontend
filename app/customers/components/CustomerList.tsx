@@ -9,10 +9,11 @@ import {
 } from "../service/reactQuery/customer.query";
 import { Customer } from "../entities/customers.entity";
 import { formatDate } from "../../utils/format";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, PlusIcon } from "@heroicons/react/20/solid";
 import NewCustomerModal from "./modals/NewCustomerModal";
 import { EditCustomerModal } from "./modals/EditCustomerModal";
-import { DeleteCustomerModal } from "./modals/DeleteCustomerModal";
+import { DeleteModal } from "../../components/modals/DeleteModal";
 import {
   Table,
   TableBody,
@@ -129,8 +130,13 @@ export default function CustomerList() {
             }}
           />
         </div>
-        <Button onClick={handleOpenNewModal} className="bg-blue-600 text-white hover:bg-blue-800">
-          Novo Cliente
+        <Button
+          onClick={handleOpenNewModal}
+          className="bg-blue-600 text-white hover:bg-blue-800 flex items-center"
+          title="Adicionar novo cliente"
+        >
+          <PlusIcon className="h-4 w-4" />
+          <span>Novo Cliente</span>
         </Button>
       </div>
 
@@ -143,7 +149,6 @@ export default function CustomerList() {
               <TableHead>Telefone</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Data de Cadastro</TableHead>
-              <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -159,16 +164,18 @@ export default function CustomerList() {
                     size="sm"
                     className="bg-gray-700 text-white hover:bg-gray-800 mr-2"
                     onClick={() => handleOpenEditModal(customer)}
+                    title="Editar cliente"
                   >
-                    Editar
+                    <PencilSquareIcon className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="destructive"
                     size="sm"
                     className="bg-red-600 text-white hover:bg-red-800"
                     onClick={() => handleOpenDeleteModal(customer)}
+                    title="Excluir cliente"
                   >
-                    Excluir
+                    <TrashIcon className="h-4 w-4" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -224,7 +231,7 @@ export default function CustomerList() {
         customer={selectedCustomer}
         onSave={handleUpdateCustomer}
       />
-      <DeleteCustomerModal
+      <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
         onConfirm={handleDeleteCustomer}

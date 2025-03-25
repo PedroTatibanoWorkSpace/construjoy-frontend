@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import { formatDate } from './format';
-import { Customer } from '../types';
+import { Customer } from '../../types';
 
 export function generateCustomerPDF(customer: Customer) {
   const doc = new jsPDF();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { customerSchema } from "../CustomerSchema";
+import { customerSchema } from "../zod/CustomerSchema";
 import InputMask from "react-input-mask";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,7 +77,7 @@ const NewCustomerModal: React.FC<NewCustomerModalProps> = ({
               <Label className="text-sm text-gray-300">Nome</Label>
               <Input
                 type="text"
-                placeholder="Digite o nome"
+                placeholder="Pedro da Silva"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
@@ -87,7 +87,7 @@ const NewCustomerModal: React.FC<NewCustomerModalProps> = ({
               <Label className="text-sm text-gray-300">Documento</Label>
               <InputMask
                 mask="999.999.999-99"
-                placeholder="Digite o documento"
+                placeholder="999.999.999-99"
                 value={document}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setDocument(e.target.value)
@@ -105,7 +105,7 @@ const NewCustomerModal: React.FC<NewCustomerModalProps> = ({
               <Label className="text-sm text-gray-300">Telefone</Label>
               <InputMask
                 mask="(99) 99999-9999"
-                placeholder="Digite o telefone"
+                placeholder="(99) 99999-9999"
                 value={phone}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setPhone(e.target.value)
@@ -123,7 +123,7 @@ const NewCustomerModal: React.FC<NewCustomerModalProps> = ({
               <Label className="text-sm text-gray-300">Email</Label>
               <Input
                 type="email"
-                placeholder="Digite o email"
+                placeholder="exemplo@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
