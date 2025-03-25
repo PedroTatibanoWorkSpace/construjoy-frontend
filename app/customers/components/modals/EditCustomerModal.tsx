@@ -5,7 +5,7 @@ import InputMask from "react-input-mask";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { Customer } from "../../entities/customers.entity";
-import { customerSchema } from "../CustomerSchema";
+import { customerSchema } from "../zod/CustomerSchema";
 import { z } from "zod";
 
 interface EditCustomerModalProps {

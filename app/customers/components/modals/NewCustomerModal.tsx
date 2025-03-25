@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { customerSchema } from "../CustomerSchema";
+import { customerSchema } from "../zod/CustomerSchema";
 import InputMask from "react-input-mask";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
