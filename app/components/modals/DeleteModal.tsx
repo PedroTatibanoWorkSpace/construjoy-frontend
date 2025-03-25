@@ -1,13 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-interface DeleteCustomerModalProps {
+interface DeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-export function DeleteCustomerModal({ isOpen, onClose, onConfirm }: DeleteCustomerModalProps) {
+export function DeleteModal({ isOpen, onClose, onConfirm }: DeleteModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-900 text-gray-100 rounded-lg">
