@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +32,24 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
   const [purchaseDate, setPurchaseDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
   const customers = useCustomers().data || [];
+
+  useEffect(() => {
+    const numericAmount = parseFloat(amount.replace(/[^\d,]/g, "").replace(",", "."));
+    const purchaseDateObj = new Date(purchaseDate);
+    const dueDateObj = new Date(dueDate);
+
+    const result = creditPurchaseSchema.safeParse({
+      clientId: customerId,
+      value: numericAmount,
+      description,
+      validate: dueDateObj,
+      purchaseDate: purchaseDateObj,
+    });
+
+    setIsFormValid(result.success);
+  }, [customerId, amount, description, purchaseDate, dueDate]);
 
   const handleClose = () => {
     setCustomerId("");
@@ -181,7 +198,8 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 rounded-md"
+                className="bg-blue-600 hover:bg-blue-700 text-gray-9 rounded-md"
+                disabled={!isFormValid}
               >
                 Salvar
               </Button>

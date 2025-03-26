@@ -16,6 +16,12 @@ export const createCreditPurchase = async (creditPurchase: CreditPurchase): Prom
   return response.data.data;
 };
 
+export const paidAccount = async (id: string, paymentDate: Date): Promise<CreditPurchase> => {
+
+  const response = await api.patch(`/receivables/paid/${id}`, { paymentDate });
+  return response.data.data;
+};
+
 export const updateCreditPurchase = async (
   id: string,
   data: Partial<CreditPurchase>
