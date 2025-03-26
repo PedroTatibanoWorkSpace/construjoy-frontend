@@ -36,7 +36,7 @@ export const getStatusClass = (status: string) => {
     case "Pago":
       return "bg-green-600 text-white";
     case "Pendente":
-      return "bg-yellow-600 text-black";
+      return "bg-yellow-500 text-black";
     case "Atrasado":
       return "bg-red-600 text-white";
     default:

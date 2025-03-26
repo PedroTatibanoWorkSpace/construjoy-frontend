@@ -23,7 +23,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
 import {
   Pagination,
   PaginationContent,
@@ -42,20 +41,20 @@ export default function CustomerList() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Ordena pelo campo internalId
   const sortedCustomers = [...customers].sort((a, b) => {
     const aId = a.internalId ? Number(a.internalId) : 0;
     const bId = b.internalId ? Number(b.internalId) : 0;
     return aId - bId;
   });
 
-  const filteredCustomers = sortedCustomers.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.document.includes(searchTerm) ||
-      customer.email.toLowerCase().includes(searchTerm) ||
-      customer.phone.includes(searchTerm)
+  // Filtragem de clientes
+  const filteredCustomers = sortedCustomers.filter((customer) =>
+    [customer.name.toLowerCase(), customer.document, customer.email.toLowerCase(), customer.phone]
+      .some((field) => field.includes(searchTerm.toLowerCase()))
   );
 
+  // Paginação
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
   const paginatedCustomers = filteredCustomers.slice(
     (currentPage - 1) * itemsPerPage,
@@ -65,6 +64,7 @@ export default function CustomerList() {
   const handleNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
   const handlePrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
 
+  // Estados e handlers dos modais
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -72,6 +72,7 @@ export default function CustomerList() {
 
   const handleOpenNewModal = () => setIsNewModalOpen(true);
   const handleCloseNewModal = () => setIsNewModalOpen(false);
+
   const handleOpenEditModal = (customer: Customer) => {
     setSelectedCustomer(customer);
     setIsEditModalOpen(true);
@@ -80,6 +81,7 @@ export default function CustomerList() {
     setSelectedCustomer(null);
     setIsEditModalOpen(false);
   };
+
   const handleOpenDeleteModal = (customer: Customer) => {
     setSelectedCustomer(customer);
     setIsDeleteModalOpen(true);
@@ -89,6 +91,7 @@ export default function CustomerList() {
     setIsDeleteModalOpen(false);
   };
 
+  // CRUD handlers
   const handleAddCustomer = (newCustomer: Customer) => {
     createCustomerMutation.mutate(newCustomer);
     setIsNewModalOpen(false);
@@ -112,8 +115,8 @@ export default function CustomerList() {
   if (error) return <div>Erro ao carregar clientes</div>;
 
   return (
-    <div className="space-y-4">
-
+    <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
+      {/* Barra de busca e botão "Novo Cliente" */}
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -122,7 +125,7 @@ export default function CustomerList() {
           <input
             type="text"
             placeholder="Buscar por nome, documento ou email..."
-            className="dark-input block w-full pl-10 pr-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -132,68 +135,89 @@ export default function CustomerList() {
         </div>
         <Button
           onClick={handleOpenNewModal}
-          className="bg-blue-600 text-white hover:bg-blue-800 flex items-center"
+          className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
           title="Adicionar novo cliente"
         >
-          <PlusIcon className="h-4 w-4" />
-          <span>Novo Cliente</span>
+          <PlusIcon className="h-5 w-5 mr-2" />
+          Novo Cliente
         </Button>
       </div>
 
-      <div className="rounded-lg shadow">
-        <Table className="hover:bg-transparent">
+      {/* Tabela de clientes */}
+      <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
+        <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Documento</TableHead>
-              <TableHead>Telefone</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
+            <TableRow className="bg-gray-700">
+              <TableHead className="px-4 py-3 text-left text-gray-300">Nome</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">Documento</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">Telefone</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">Email</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">Data de Cadastro</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedCustomers.map((customer) => (
-              <TableRow key={customer.id}>
-                <TableCell>{customer.name}</TableCell>
-                <TableCell>{customer.document}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{formatDate(new Date(customer.createdAt || ""))}</TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    className="bg-gray-700 text-white hover:bg-gray-800 mr-2"
-                    onClick={() => handleOpenEditModal(customer)}
-                    title="Editar cliente"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="bg-red-600 text-white hover:bg-red-800"
-                    onClick={() => handleOpenDeleteModal(customer)}
-                    title="Excluir cliente"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </Button>
+            {paginatedCustomers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4 text-gray-400">
+                  Nenhum cliente encontrado.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedCustomers.map((customer) => (
+                <TableRow
+                  key={customer.id}
+                  className="hover:bg-gray-700 transition-colors duration-150"
+                >
+                  <TableCell className="px-4 py-3">{customer.name}</TableCell>
+                  <TableCell className="px-4 py-3">{customer.document}</TableCell>
+                  <TableCell className="px-4 py-3">{customer.phone}</TableCell>
+                  <TableCell className="px-4 py-3">{customer.email}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {formatDate(new Date(customer.createdAt || ""))}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        className="bg-gray-700 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                        onClick={() => handleOpenEditModal(customer)}
+                        title="Editar cliente"
+                      >
+                        <PencilSquareIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="bg-red-600 text-white hover:bg-red-500 px-3 py-1 rounded-md transition"
+                        onClick={() => handleOpenDeleteModal(customer)}
+                        title="Excluir cliente"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
+      {/* Paginação */}
       {totalPages > 1 && (
-        <Pagination>
+        <Pagination className="flex justify-end">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 onClick={currentPage === 1 ? undefined : handlePrevPage}
                 className={`${
-                  currentPage === 1 ? "opacity-50 pointer-events-none" : "bg-gray-700 text-white hover:bg-gray-800"
-                }`}
+                  currentPage === 1
+                    ? "opacity-50 pointer-events-none"
+                    : "bg-gray-700 text-white hover:bg-gray-800"
+                } transition-colors rounded-l-lg px-3 py-2`}
               >
+                Anterior
               </PaginationPrevious>
             </PaginationItem>
             {Array.from({ length: totalPages }).map((_, index) => {
@@ -202,7 +226,11 @@ export default function CustomerList() {
                 <PaginationItem key={page}>
                   <Button
                     variant={currentPage === page ? "default" : "outline"}
-                    className={currentPage === page ? "bg-white text-black" : "bg-gray-600 text-white hover:bg-gray-700"}
+                    className={`${
+                      currentPage === page
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-700 text-white hover:bg-gray-600"
+                    } transition-colors px-3 py-2`}
                     onClick={() => setCurrentPage(page)}
                   >
                     {page}
@@ -214,8 +242,10 @@ export default function CustomerList() {
               <PaginationNext
                 onClick={currentPage === totalPages ? undefined : handleNextPage}
                 className={`${
-                  currentPage === totalPages ? "opacity-50 pointer-events-none" : "bg-gray-700 text-white hover:bg-gray-800"
-                }`}
+                  currentPage === totalPages
+                    ? "opacity-50 pointer-events-none"
+                    : "bg-gray-700 text-white hover:bg-gray-800"
+                } transition-colors rounded-r-lg px-3 py-2`}
               >
                 Próxima
               </PaginationNext>
@@ -224,7 +254,12 @@ export default function CustomerList() {
         </Pagination>
       )}
 
-      <NewCustomerModal isOpen={isNewModalOpen} onClose={handleCloseNewModal} onAddCustomer={handleAddCustomer} />
+      {/* Modais */}
+      <NewCustomerModal
+        isOpen={isNewModalOpen}
+        onClose={handleCloseNewModal}
+        onAddCustomer={handleAddCustomer}
+      />
       <EditCustomerModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
