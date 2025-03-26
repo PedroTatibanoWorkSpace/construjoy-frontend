@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { generateCustomerPDF } from '@/app/utils/drawnPDF';
 import {
   Table,
@@ -12,39 +12,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
-const mockCustomers = [
-  {
-    id: '1',
-    fullName: 'João Silva',
-    purchases: [
-      {
-        id: '1',
-        amount: 1000,
-        description: 'Compra de materiais',
-        purchaseDate: new Date('2023-08-01'),
-        dueDate: new Date('2025-12-05'),
-        status: 'pending' as 'pending',
-      },
-      {
-        id: '2',
-        amount: 23323,
-        description: 'Compra de materiais',
-        purchaseDate: new Date('2023-08-01'),
-        dueDate: new Date('2023-09-05'),
-        status: 'pending' as 'pending',
-      },
-    ],
-  },
-];
+import { useCustomers } from '@/app/customers/service/reactQuery/customer.query';
 
 export default function ReportList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const { data: customers = [], isLoading, error } = useCustomers();
   const itemsPerPage = 10;
 
-  const filteredCustomers = mockCustomers.filter((customer) =>
-    customer.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = customers.filter((customer) =>
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
@@ -54,8 +31,11 @@ export default function ReportList() {
     startIndex + itemsPerPage
   );
 
+  const handlePrevPage = () => setCurrentPage(Math.max(1, currentPage - 1));
+  const handleNextPage = () => setCurrentPage(Math.min(totalPages, currentPage + 1));
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -64,36 +44,51 @@ export default function ReportList() {
           <input
             type="text"
             placeholder="Buscar por nome..."
-            className="dark-input block w-full pl-10 pr-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
       </div>
 
-      <div className="rounded-lg shadow">
-        <Table className="hover:bg-transparent">
+      <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
+        <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
-            <TableRow>
-              <TableHead>Nome Completo</TableHead>
-              <TableHead>Ações</TableHead>
+            <TableRow className="bg-gray-700">
+              <TableHead className="px-4 py-3 text-left text-gray-300">Nome Completo</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">CPF</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedCustomers.map((customer) => (
-              <TableRow key={customer.id}>
-                <TableCell>{customer.fullName}</TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    className="bg-blue-600 text-white hover:bg-blue-500"
-                    onClick={() => generateCustomerPDF(customer)}
-                  >
-                    Gerar PDF
-                  </Button>
+            {paginatedCustomers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={2} className="text-center py-4 text-gray-400">
+                  Nenhum cliente encontrado.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedCustomers.map((customer) => (
+                <TableRow key={customer.id} className="hover:bg-gray-700 transition-colors duration-150">
+                  <TableCell className="px-4 py-3">{customer.name}</TableCell>
+                  <TableCell className="px-4 py-3">{customer.document}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    <Button
+                      title='Gerar PDF'
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+                      onClick={() => generateCustomerPDF(customer)}
+                    >
+                      <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
+                      Gerar Relatório <br/>de Débitos
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
@@ -102,8 +97,9 @@ export default function ReportList() {
         <div className="px-6 py-4 flex items-center justify-between border-t border-gray-700">
           <Button
             variant="outline"
-            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            onClick={handlePrevPage}
             disabled={currentPage === 1}
+            className="bg-gray-700 text-white hover:bg-gray-600 transition-colors rounded-l-lg px-3 py-2"
           >
             Anterior
           </Button>
@@ -112,10 +108,9 @@ export default function ReportList() {
           </span>
           <Button
             variant="outline"
-            onClick={() =>
-              setCurrentPage((page) => Math.min(totalPages, page + 1))
-            }
+            onClick={handleNextPage}
             disabled={currentPage === totalPages}
+            className="bg-gray-700 text-white hover:bg-gray-600 transition-colors rounded-r-lg px-3 py-2"
           >
             Próxima
           </Button>

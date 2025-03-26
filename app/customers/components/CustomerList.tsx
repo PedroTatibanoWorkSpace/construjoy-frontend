@@ -10,7 +10,7 @@ import {
 import { Customer } from "../entities/customers.entity";
 import { formatDate } from "../../utils/format";
 import { MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { PencilSquareIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 import NewCustomerModal from "./modals/NewCustomerModal";
 import { EditCustomerModal } from "./modals/EditCustomerModal";
 import { DeleteModal } from "../../components/modals/DeleteModal";
@@ -41,20 +41,17 @@ export default function CustomerList() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Ordena pelo campo internalId
   const sortedCustomers = [...customers].sort((a, b) => {
     const aId = a.internalId ? Number(a.internalId) : 0;
     const bId = b.internalId ? Number(b.internalId) : 0;
     return aId - bId;
   });
 
-  // Filtragem de clientes
   const filteredCustomers = sortedCustomers.filter((customer) =>
     [customer.name.toLowerCase(), customer.document, customer.email.toLowerCase(), customer.phone]
       .some((field) => field.includes(searchTerm.toLowerCase()))
   );
 
-  // Paginação
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
   const paginatedCustomers = filteredCustomers.slice(
     (currentPage - 1) * itemsPerPage,
@@ -64,7 +61,6 @@ export default function CustomerList() {
   const handleNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
   const handlePrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
 
-  // Estados e handlers dos modais
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -91,7 +87,6 @@ export default function CustomerList() {
     setIsDeleteModalOpen(false);
   };
 
-  // CRUD handlers
   const handleAddCustomer = (newCustomer: Customer) => {
     createCustomerMutation.mutate(newCustomer);
     setIsNewModalOpen(false);
@@ -116,7 +111,6 @@ export default function CustomerList() {
 
   return (
     <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
-      {/* Barra de busca e botão "Novo Cliente" */}
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -143,13 +137,12 @@ export default function CustomerList() {
         </Button>
       </div>
 
-      {/* Tabela de clientes */}
       <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
         <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
             <TableRow className="bg-gray-700">
               <TableHead className="px-4 py-3 text-left text-gray-300">Nome</TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">Documento</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">CPF</TableHead>
               <TableHead className="px-4 py-3 text-left text-gray-300">Telefone</TableHead>
               <TableHead className="px-4 py-3 text-left text-gray-300">Email</TableHead>
               <TableHead className="px-4 py-3 text-left text-gray-300">Data de Cadastro</TableHead>
@@ -204,7 +197,6 @@ export default function CustomerList() {
         </Table>
       </div>
 
-      {/* Paginação */}
       {totalPages > 1 && (
         <Pagination className="flex justify-end">
           <PaginationContent>
@@ -254,7 +246,6 @@ export default function CustomerList() {
         </Pagination>
       )}
 
-      {/* Modais */}
       <NewCustomerModal
         isOpen={isNewModalOpen}
         onClose={handleCloseNewModal}

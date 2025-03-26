@@ -142,7 +142,6 @@ export default function CreditPurchaseList() {
     );
   });
 
-  // Pagination
   const totalPages = Math.ceil(filteredPurchases.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPurchases = filteredPurchases.slice(
@@ -266,15 +265,19 @@ export default function CreditPurchaseList() {
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        className="bg-gray-500 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
-                        onClick={() => handleOpenPaidCreditModal(purchase)}
-                      >
-                        <CurrencyDollarIcon className="h-4 w-4" />
-                      </Button>
+                      {purchase.paymentStatus !== "Pago" && (
+                        <Button
+                          title="Marcar como pago"
+                          size="sm"
+                          className="bg-gray-500 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                          onClick={() => handleOpenPaidCreditModal(purchase)}
+                        >
+                          <CurrencyDollarIcon className="h-4 w-4" />
+                        </Button>
+                      )}
 
                       <Button
+                        title="Editar compras"
                         size="sm"
                         className="bg-gray-700 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
                         onClick={() => handleOpenEditModal(purchase)}
@@ -282,6 +285,7 @@ export default function CreditPurchaseList() {
                         <PencilSquareIcon className="h-4 w-4" />
                       </Button>
                       <Button
+                        title="Excluir compras"
                         variant="destructive"
                         size="sm"
                         className="bg-red-600 text-white hover:bg-red-500 px-3 py-1 rounded-md transition"
