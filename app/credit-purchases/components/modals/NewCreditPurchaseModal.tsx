@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -32,7 +33,24 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
   const [purchaseDate, setPurchaseDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
   const customers = useCustomers().data || [];
+
+  useEffect(() => {
+    const numericAmount = parseFloat(amount.replace(/[^\d,]/g, "").replace(",", "."));
+    const purchaseDateObj = new Date(purchaseDate);
+    const dueDateObj = new Date(dueDate);
+
+    const result = creditPurchaseSchema.safeParse({
+      clientId: customerId,
+      value: numericAmount,
+      description,
+      validate: dueDateObj,
+      purchaseDate: purchaseDateObj,
+    });
+
+    setIsFormValid(result.success);
+  }, [customerId, amount, description, purchaseDate, dueDate]);
 
   const handleClose = () => {
     setCustomerId("");
@@ -60,9 +78,8 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
     });
   
     if (!result.success) {
-      console.error("Erro de validação:", result.error);
       const errorMessage = result.error.errors[0]?.message || "Por favor, verifique os campos preenchidos";
-      alert(errorMessage);
+      toast.error("Erro de validação", errorMessage);
       return;
     }
   
@@ -109,6 +126,22 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md">
+                  <div className="px-2 py-2">
+                    <Input
+                      placeholder="Pesquisar cliente..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md mb-2"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => {
+                        e.stopPropagation();
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                        }
+                      }}
+                      autoComplete="off"
+                    />
+                  </div>
                   <SelectItem
                     value="default"
                     disabled
@@ -181,7 +214,8 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 rounded-md"
+                className="bg-blue-600 hover:bg-blue-700 text-gray-9 rounded-md"
+                disabled={!isFormValid}
               >
                 Salvar
               </Button>

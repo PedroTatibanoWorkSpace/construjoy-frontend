@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Customer } from "../../entities/customers.entity";
+import { toast } from "@/hooks/use-toast";
 
 interface NewCustomerModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ const NewCustomerModal: React.FC<NewCustomerModalProps> = ({
   useEffect(() => {
     const result = customerSchema.safeParse({ name, document, phone, email });
     setIsFormValid(result.success);
-  }, [name, document, phone, email]); 
+  }, [name, document, phone, email]);
 
   const handleClose = () => {
     setName("");
@@ -46,7 +47,9 @@ const NewCustomerModal: React.FC<NewCustomerModalProps> = ({
       email,
     });
     if (!result.success) {
-      alert("Erro: " + JSON.stringify(result.error.format(), null, 2));
+   
+
+      toast.error("Erro de validação");
       return;
     }
 
