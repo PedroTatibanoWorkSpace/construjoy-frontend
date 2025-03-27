@@ -1,3 +1,5 @@
+import { CreditPurchase } from "@/app/credit-purchases/entities/credit-purchase.entity";
+
 export interface Customer {
     id?: string;
     internalId?: string;
@@ -7,5 +9,5 @@ export interface Customer {
     document: string;
     createdAt?: string; 
     status?: 'Active' | 'Inactive'; 
-
+    receivables?: CreditPurchase[];
   }

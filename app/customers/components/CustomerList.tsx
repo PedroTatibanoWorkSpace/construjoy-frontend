@@ -8,12 +8,13 @@ import {
   useDeleteCustomer,
 } from "../service/reactQuery/customer.query";
 import { Customer } from "../entities/customers.entity";
-import { formatDate } from "../../utils/format";
+import { formatDate } from "@/app/utils";
 import { MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { PencilSquareIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 import NewCustomerModal from "./modals/NewCustomerModal";
 import { EditCustomerModal } from "./modals/EditCustomerModal";
 import { DeleteModal } from "../../components/modals/DeleteModal";
+import { PaidMultipleModal } from "./modals/PaidMultipleModal";
 import {
   Table,
   TableBody,
@@ -23,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
 import {
   Pagination,
   PaginationContent,
@@ -31,6 +31,8 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { toast } from "@/hooks/use-toast";
 
 export default function CustomerList() {
   const { data: customers = [], isLoading, error } = useCustomers();
@@ -48,12 +50,13 @@ export default function CustomerList() {
     return aId - bId;
   });
 
-  const filteredCustomers = sortedCustomers.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.document.includes(searchTerm) ||
-      customer.email.toLowerCase().includes(searchTerm) ||
-      customer.phone.includes(searchTerm)
+  const filteredCustomers = sortedCustomers.filter((customer) =>
+    [
+      customer.name.toLowerCase(),
+      customer.document,
+      customer.email.toLowerCase(),
+      customer.phone,
+    ].some((field) => field.includes(searchTerm.toLowerCase()))
   );
 
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
@@ -62,16 +65,22 @@ export default function CustomerList() {
     currentPage * itemsPerPage
   );
 
-  const handleNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
-  const handlePrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
+  const handleNextPage = () =>
+    currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const handlePrevPage = () =>
+    currentPage > 1 && setCurrentPage(currentPage - 1);
 
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isPaidMultipleModalOpen, setIsPaidMultipleModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
 
   const handleOpenNewModal = () => setIsNewModalOpen(true);
   const handleCloseNewModal = () => setIsNewModalOpen(false);
+
   const handleOpenEditModal = (customer: Customer) => {
     setSelectedCustomer(customer);
     setIsEditModalOpen(true);
@@ -80,6 +89,7 @@ export default function CustomerList() {
     setSelectedCustomer(null);
     setIsEditModalOpen(false);
   };
+
   const handleOpenDeleteModal = (customer: Customer) => {
     setSelectedCustomer(customer);
     setIsDeleteModalOpen(true);
@@ -89,31 +99,89 @@ export default function CustomerList() {
     setIsDeleteModalOpen(false);
   };
 
+  const handleOpenPaidMultipleModal = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setIsPaidMultipleModalOpen(true);
+  };
+
+  const handleClosePaidMultipleModal = () => {
+    setSelectedCustomer(null);
+    setIsPaidMultipleModalOpen(false);
+  };
+
   const handleAddCustomer = (newCustomer: Customer) => {
-    createCustomerMutation.mutate(newCustomer);
-    setIsNewModalOpen(false);
+    createCustomerMutation.mutate(newCustomer, {
+      onSuccess: () => {
+        toast.success("Cliente adicionado", "Cliente cadastrado com sucesso!");
+        setIsNewModalOpen(false);
+      },
+      onError: (error: any) => {
+        toast.error(
+          "Erro ao adicionar cliente",
+          error?.message || "Não foi possível adicionar o cliente."
+        );
+      },
+    });
   };
 
   const handleUpdateCustomer = (updatedCustomer: Partial<Customer>) => {
     if (selectedCustomer?.id) {
-      updateCustomerMutation.mutate({ id: selectedCustomer.id, data: updatedCustomer });
-      setIsEditModalOpen(false);
+      updateCustomerMutation.mutate(
+        {
+          id: selectedCustomer.id,
+          data: updatedCustomer,
+        },
+        {
+          onSuccess: () => {
+            toast.success(
+              "Cliente atualizado",
+              "Os dados do cliente foram atualizados com sucesso!"
+            );
+            setIsEditModalOpen(false);
+          },
+          onError: (error: any) => {
+            toast.error(
+              "Erro ao atualizar cliente",
+              error?.message ||
+                "Não foi possível atualizar os dados do cliente."
+            );
+          },
+        }
+      );
     }
   };
 
   const handleDeleteCustomer = () => {
     if (selectedCustomer?.id) {
-      deleteCustomerMutation.mutate(selectedCustomer.id);
-      setIsDeleteModalOpen(false);
+      deleteCustomerMutation.mutate(selectedCustomer.id, {
+        onSuccess: () => {
+          toast.success(
+            "Cliente excluído",
+            "O cliente foi excluído com sucesso!"
+          );
+          setIsDeleteModalOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error(
+            "Erro ao excluir cliente",
+            error?.message || "Não foi possível excluir o cliente."
+          );
+        },
+      });
     }
   };
 
   if (isLoading) return <div>Carregando...</div>;
-  if (error) return <div>Erro ao carregar clientes</div>;
+  if (error) {
+    toast.error(
+      "Erro ao carregar",
+      "Não foi possível carregar a lista de clientes."
+    );
+    return <div>Erro ao carregar clientes</div>;
+  }
 
   return (
-    <div className="space-y-4">
-
+    <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -122,7 +190,7 @@ export default function CustomerList() {
           <input
             type="text"
             placeholder="Buscar por nome, documento ou email..."
-            className="dark-input block w-full pl-10 pr-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -132,68 +200,112 @@ export default function CustomerList() {
         </div>
         <Button
           onClick={handleOpenNewModal}
-          className="bg-blue-600 text-white hover:bg-blue-800 flex items-center"
+          className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
           title="Adicionar novo cliente"
         >
-          <PlusIcon className="h-4 w-4" />
-          <span>Novo Cliente</span>
+          <PlusIcon className="h-5 w-5 mr-2" />
+          Novo Cliente
         </Button>
       </div>
 
-      <div className="rounded-lg shadow">
-        <Table className="hover:bg-transparent">
+      <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
+        <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Documento</TableHead>
-              <TableHead>Telefone</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
+            <TableRow className="bg-gray-700">
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Nome
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                CPF
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Telefone
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Email
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Data de Cadastro
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Ações
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedCustomers.map((customer) => (
-              <TableRow key={customer.id}>
-                <TableCell>{customer.name}</TableCell>
-                <TableCell>{customer.document}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{formatDate(new Date(customer.createdAt || ""))}</TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    className="bg-gray-700 text-white hover:bg-gray-800 mr-2"
-                    onClick={() => handleOpenEditModal(customer)}
-                    title="Editar cliente"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="bg-red-600 text-white hover:bg-red-800"
-                    onClick={() => handleOpenDeleteModal(customer)}
-                    title="Excluir cliente"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </Button>
+            {paginatedCustomers.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-4 text-gray-400"
+                >
+                  Nenhum cliente encontrado.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedCustomers.map((customer) => (
+                <TableRow
+                  key={customer.id}
+                  className="hover:bg-gray-700 transition-colors duration-150"
+                >
+                  <TableCell className="px-4 py-3">{customer.name}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {customer.document}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">{customer.phone}</TableCell>
+                  <TableCell className="px-4 py-3">{customer.email}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {formatDate(new Date(customer.createdAt || ""))}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        className="bg-gray-500 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                        onClick={() => handleOpenPaidMultipleModal(customer)}
+                        title="Registrar pagamentos múltiplos"
+                      >
+                        <CurrencyDollarIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-gray-700 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                        onClick={() => handleOpenEditModal(customer)}
+                        title="Editar cliente"
+                      >
+                        <PencilSquareIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="bg-red-600 text-white hover:bg-red-500 px-3 py-1 rounded-md transition"
+                        onClick={() => handleOpenDeleteModal(customer)}
+                        title="Excluir cliente"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
       {totalPages > 1 && (
-        <Pagination>
+        <Pagination className="flex justify-end">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 onClick={currentPage === 1 ? undefined : handlePrevPage}
                 className={`${
-                  currentPage === 1 ? "opacity-50 pointer-events-none" : "bg-gray-700 text-white hover:bg-gray-800"
-                }`}
+                  currentPage === 1
+                    ? "opacity-50 pointer-events-none"
+                    : "bg-gray-700 text-white hover:bg-gray-800"
+                } transition-colors rounded-l-lg px-3 py-2`}
               >
+                Anterior
               </PaginationPrevious>
             </PaginationItem>
             {Array.from({ length: totalPages }).map((_, index) => {
@@ -202,7 +314,11 @@ export default function CustomerList() {
                 <PaginationItem key={page}>
                   <Button
                     variant={currentPage === page ? "default" : "outline"}
-                    className={currentPage === page ? "bg-white text-black" : "bg-gray-600 text-white hover:bg-gray-700"}
+                    className={`${
+                      currentPage === page
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-700 text-white hover:bg-gray-600"
+                    } transition-colors px-3 py-2`}
                     onClick={() => setCurrentPage(page)}
                   >
                     {page}
@@ -212,10 +328,14 @@ export default function CustomerList() {
             })}
             <PaginationItem>
               <PaginationNext
-                onClick={currentPage === totalPages ? undefined : handleNextPage}
+                onClick={
+                  currentPage === totalPages ? undefined : handleNextPage
+                }
                 className={`${
-                  currentPage === totalPages ? "opacity-50 pointer-events-none" : "bg-gray-700 text-white hover:bg-gray-800"
-                }`}
+                  currentPage === totalPages
+                    ? "opacity-50 pointer-events-none"
+                    : "bg-gray-700 text-white hover:bg-gray-800"
+                } transition-colors rounded-r-lg px-3 py-2`}
               >
                 Próxima
               </PaginationNext>
@@ -224,7 +344,11 @@ export default function CustomerList() {
         </Pagination>
       )}
 
-      <NewCustomerModal isOpen={isNewModalOpen} onClose={handleCloseNewModal} onAddCustomer={handleAddCustomer} />
+      <NewCustomerModal
+        isOpen={isNewModalOpen}
+        onClose={handleCloseNewModal}
+        onAddCustomer={handleAddCustomer}
+      />
       <EditCustomerModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
@@ -235,6 +359,11 @@ export default function CustomerList() {
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
         onConfirm={handleDeleteCustomer}
+      />
+      <PaidMultipleModal
+        isOpen={isPaidMultipleModalOpen}
+        onClose={handleClosePaidMultipleModal}
+        customer={selectedCustomer}
       />
     </div>
   );
