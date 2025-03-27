@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { formatDate } from "./format";
+import { formatDate } from "./dateUtils";
 import { Customer } from "../customers/entities/customers.entity";
 
 export function generateCustomerPDF(customer: Customer) {
