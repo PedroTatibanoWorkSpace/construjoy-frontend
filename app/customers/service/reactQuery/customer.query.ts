@@ -8,13 +8,22 @@ import {
 } from "../customer.service";
 import { Customer } from "../../entities/customers.entity";
 import { UpdateCustomerInput } from "../../types/customer.type";
+import { toast } from "@/hooks/use-toast";
 
 export const useCustomers = () => {
-  return useQuery<Customer[]>("customers", findAllCustomers);
+  return useQuery<Customer[]>("customers", findAllCustomers, {
+    onError: (error: any) => {
+      toast.error("Erro ao carregar clientes", error?.message || "Não foi possível carregar a lista de clientes.");
+    }
+  });
 };
 
 export const useCustomer = (id: string) => {
-  return useQuery<Customer>(["customer", id], () => findOneCustomer(id));
+  return useQuery<Customer>(["customer", id], () => findOneCustomer(id), {
+    onError: (error: any) => {
+      toast.error("Erro ao carregar cliente", error?.message || "Não foi possível carregar os detalhes do cliente.");
+    }
+  });
 };
 
 export const useCreateCustomer = () => {
@@ -22,7 +31,7 @@ export const useCreateCustomer = () => {
   return useMutation(createCustomer, {
     onSuccess: () => {
       queryClient.invalidateQueries("customers");
-    },
+    }
   });
 };
 
@@ -33,7 +42,7 @@ export const useUpdateCustomer = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("customers");
-      },
+      }
     }
   );
 };
@@ -43,6 +52,6 @@ export const useDeleteCustomer = () => {
   return useMutation(deleteCustomer, {
     onSuccess: () => {
       queryClient.invalidateQueries("customers");
-    },
+    }
   });
 };

@@ -8,12 +8,13 @@ import {
   useDeleteCustomer,
 } from "../service/reactQuery/customer.query";
 import { Customer } from "../entities/customers.entity";
-import { formatDate } from "../../utils/format";
+import { formatDate } from "@/app/utils";
 import { MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 import NewCustomerModal from "./modals/NewCustomerModal";
 import { EditCustomerModal } from "./modals/EditCustomerModal";
 import { DeleteModal } from "../../components/modals/DeleteModal";
+import { PaidMultipleModal } from "./modals/PaidMultipleModal";
 import {
   Table,
   TableBody,
@@ -30,6 +31,8 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { toast } from "@/hooks/use-toast";
 
 export default function CustomerList() {
   const { data: customers = [], isLoading, error } = useCustomers();
@@ -48,8 +51,12 @@ export default function CustomerList() {
   });
 
   const filteredCustomers = sortedCustomers.filter((customer) =>
-    [customer.name.toLowerCase(), customer.document, customer.email.toLowerCase(), customer.phone]
-      .some((field) => field.includes(searchTerm.toLowerCase()))
+    [
+      customer.name.toLowerCase(),
+      customer.document,
+      customer.email.toLowerCase(),
+      customer.phone,
+    ].some((field) => field.includes(searchTerm.toLowerCase()))
   );
 
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
@@ -58,13 +65,18 @@ export default function CustomerList() {
     currentPage * itemsPerPage
   );
 
-  const handleNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
-  const handlePrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
+  const handleNextPage = () =>
+    currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const handlePrevPage = () =>
+    currentPage > 1 && setCurrentPage(currentPage - 1);
 
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isPaidMultipleModalOpen, setIsPaidMultipleModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
 
   const handleOpenNewModal = () => setIsNewModalOpen(true);
   const handleCloseNewModal = () => setIsNewModalOpen(false);
@@ -87,27 +99,86 @@ export default function CustomerList() {
     setIsDeleteModalOpen(false);
   };
 
+  const handleOpenPaidMultipleModal = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setIsPaidMultipleModalOpen(true);
+  };
+
+  const handleClosePaidMultipleModal = () => {
+    setSelectedCustomer(null);
+    setIsPaidMultipleModalOpen(false);
+  };
+
   const handleAddCustomer = (newCustomer: Customer) => {
-    createCustomerMutation.mutate(newCustomer);
-    setIsNewModalOpen(false);
+    createCustomerMutation.mutate(newCustomer, {
+      onSuccess: () => {
+        toast.success("Cliente adicionado", "Cliente cadastrado com sucesso!");
+        setIsNewModalOpen(false);
+      },
+      onError: (error: any) => {
+        toast.error(
+          "Erro ao adicionar cliente",
+          error?.message || "Não foi possível adicionar o cliente."
+        );
+      },
+    });
   };
 
   const handleUpdateCustomer = (updatedCustomer: Partial<Customer>) => {
     if (selectedCustomer?.id) {
-      updateCustomerMutation.mutate({ id: selectedCustomer.id, data: updatedCustomer });
-      setIsEditModalOpen(false);
+      updateCustomerMutation.mutate(
+        {
+          id: selectedCustomer.id,
+          data: updatedCustomer,
+        },
+        {
+          onSuccess: () => {
+            toast.success(
+              "Cliente atualizado",
+              "Os dados do cliente foram atualizados com sucesso!"
+            );
+            setIsEditModalOpen(false);
+          },
+          onError: (error: any) => {
+            toast.error(
+              "Erro ao atualizar cliente",
+              error?.message ||
+                "Não foi possível atualizar os dados do cliente."
+            );
+          },
+        }
+      );
     }
   };
 
   const handleDeleteCustomer = () => {
     if (selectedCustomer?.id) {
-      deleteCustomerMutation.mutate(selectedCustomer.id);
-      setIsDeleteModalOpen(false);
+      deleteCustomerMutation.mutate(selectedCustomer.id, {
+        onSuccess: () => {
+          toast.success(
+            "Cliente excluído",
+            "O cliente foi excluído com sucesso!"
+          );
+          setIsDeleteModalOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error(
+            "Erro ao excluir cliente",
+            error?.message || "Não foi possível excluir o cliente."
+          );
+        },
+      });
     }
   };
 
   if (isLoading) return <div>Carregando...</div>;
-  if (error) return <div>Erro ao carregar clientes</div>;
+  if (error) {
+    toast.error(
+      "Erro ao carregar",
+      "Não foi possível carregar a lista de clientes."
+    );
+    return <div>Erro ao carregar clientes</div>;
+  }
 
   return (
     <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
@@ -141,18 +212,33 @@ export default function CustomerList() {
         <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
             <TableRow className="bg-gray-700">
-              <TableHead className="px-4 py-3 text-left text-gray-300">Nome</TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">CPF</TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">Telefone</TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">Email</TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">Data de Cadastro</TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">Ações</TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Nome
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                CPF
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Telefone
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Email
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Data de Cadastro
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-gray-300">
+                Ações
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedCustomers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-4 text-gray-400">
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-4 text-gray-400"
+                >
                   Nenhum cliente encontrado.
                 </TableCell>
               </TableRow>
@@ -163,7 +249,9 @@ export default function CustomerList() {
                   className="hover:bg-gray-700 transition-colors duration-150"
                 >
                   <TableCell className="px-4 py-3">{customer.name}</TableCell>
-                  <TableCell className="px-4 py-3">{customer.document}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {customer.document}
+                  </TableCell>
                   <TableCell className="px-4 py-3">{customer.phone}</TableCell>
                   <TableCell className="px-4 py-3">{customer.email}</TableCell>
                   <TableCell className="px-4 py-3">
@@ -171,6 +259,14 @@ export default function CustomerList() {
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        className="bg-gray-500 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                        onClick={() => handleOpenPaidMultipleModal(customer)}
+                        title="Registrar pagamentos múltiplos"
+                      >
+                        <CurrencyDollarIcon className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         className="bg-gray-700 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
@@ -232,7 +328,9 @@ export default function CustomerList() {
             })}
             <PaginationItem>
               <PaginationNext
-                onClick={currentPage === totalPages ? undefined : handleNextPage}
+                onClick={
+                  currentPage === totalPages ? undefined : handleNextPage
+                }
                 className={`${
                   currentPage === totalPages
                     ? "opacity-50 pointer-events-none"
@@ -261,6 +359,11 @@ export default function CustomerList() {
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
         onConfirm={handleDeleteCustomer}
+      />
+      <PaidMultipleModal
+        isOpen={isPaidMultipleModalOpen}
+        onClose={handleClosePaidMultipleModal}
+        customer={selectedCustomer}
       />
     </div>
   );
