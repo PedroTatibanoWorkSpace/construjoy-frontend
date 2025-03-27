@@ -7,12 +7,7 @@ import {
   useDeleteCreditPurchase,
   useUpdateCreditPurchase,
 } from "../service/reactQuery/creditPurchase.query";
-import {
-  formatCurrency,
-  formatDate,
-  formatDateForSearch,
-  getStatusClass,
-} from "../../utils/format";
+import { formatCurrency, formatDateForSearch, formatDate, getStatusClass } from "@/app/utils";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   PencilSquareIcon,
@@ -42,6 +37,7 @@ import { EditCreditPurchaseModal } from "./modals/EditCreditPurchaseModal";
 import { CreditPurchase } from "../entities/credit-purchase.entity";
 import PaidCreditPurchaseModal from "./modals/PaidCreditPurchaseModal";
 import { usePaidAccount } from "../service/reactQuery/creditPurchase.query";
+import { toast } from "@/hooks/use-toast";
 
 export default function CreditPurchaseList() {
   const { data: purchases = [], isLoading } = useCreditPurchases();
@@ -65,8 +61,15 @@ export default function CreditPurchaseList() {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const handleAddCreditPurchase = (newCreditPurchase: CreditPurchase) => {
-    createCreditPurchaseMutation.mutate(newCreditPurchase);
-    handleCloseModal();
+    createCreditPurchaseMutation.mutate(newCreditPurchase, {
+      onSuccess: () => {
+        toast.success("Compra registrada", "A compra a crédito foi registrada com sucesso!");
+        handleCloseModal();
+      },
+      onError: (error: any) => {
+        toast.error("Erro ao registrar compra", error?.message || "Não foi possível registrar a compra a crédito.");
+      }
+    });
   };
 
   const handleOpenDeleteModal = (purchase: CreditPurchase) => {
@@ -91,18 +94,32 @@ export default function CreditPurchaseList() {
 
   const handleDeletePurchase = () => {
     if (selectedPurchase?.id) {
-      deleteCreditPurchaseMutation.mutate(selectedPurchase.id);
-      setIsDeleteModalOpen(false);
+      deleteCreditPurchaseMutation.mutate(selectedPurchase.id, {
+        onSuccess: () => {
+          toast.success("Compra excluída", "A compra a crédito foi excluída com sucesso!");
+          setIsDeleteModalOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error("Erro ao excluir", error?.message || "Não foi possível excluir a compra a crédito.");
+        }
+      });
     }
   };
 
-  const handlePaidCreditPurchase = () => {
+  const handlePaidCreditPurchase = (paymentDate: Date) => {
     if (selectedPurchase?.id) {
       isPaidAccount.mutate({
         id: selectedPurchase.id,
-        paymentDate: new Date(),
+        paymentDate: paymentDate,
+      }, {
+        onSuccess: () => {
+          toast.success("Pagamento registrado", "O pagamento foi registrado com sucesso!");
+          setIsPaidCreditModal(false);
+        },
+        onError: (error: any) => {
+          toast.error("Erro ao registrar pagamento", error?.message || "Não foi possível registrar o pagamento.");
+        }
       });
-      setIsPaidCreditModal(false);
     }
   };
 
@@ -121,8 +138,15 @@ export default function CreditPurchaseList() {
       updateCreditPurchaseMutation.mutate({
         id: selectedPurchase.id,
         data: updatedPurchase,
+      }, {
+        onSuccess: () => {
+          toast.success("Compra atualizada", "A compra a crédito foi atualizada com sucesso!");
+          setIsEditModalOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error("Erro ao atualizar", error?.message || "Não foi possível atualizar a compra a crédito.");
+        }
       });
-      setIsEditModalOpen(false);
     }
   };
 
@@ -187,10 +211,10 @@ export default function CreditPurchaseList() {
                 Valor
               </TableHead>
               <TableHead className="px-4 py-3 text-left text-gray-300">
-                Validade
+                Data da compra
               </TableHead>
               <TableHead className="px-4 py-3 text-left text-gray-300">
-                Data da compra
+                Validade
               </TableHead>
               <TableHead className="px-4 py-3 text-left text-gray-300">
                 Status
@@ -238,10 +262,10 @@ export default function CreditPurchaseList() {
                     {formatCurrency(purchase.value)}
                   </TableCell>
                   <TableCell className="px-4 py-3">
-                    {formatDate(purchase.validate)}
+                    {formatDate(purchase.purchaseDate)}
                   </TableCell>
                   <TableCell className="px-4 py-3">
-                    {formatDate(purchase.purchaseDate)}
+                    {formatDate(purchase.validate)}
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <span

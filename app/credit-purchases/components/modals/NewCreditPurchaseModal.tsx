@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -77,9 +78,8 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
     });
   
     if (!result.success) {
-      console.error("Erro de validação:", result.error);
       const errorMessage = result.error.errors[0]?.message || "Por favor, verifique os campos preenchidos";
-      alert(errorMessage);
+      toast.error("Erro de validação", errorMessage);
       return;
     }
   
@@ -126,6 +126,22 @@ const NewCreditPurchaseModal: React.FC<NewCreditPurchaseModalProps> = ({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md">
+                  <div className="px-2 py-2">
+                    <Input
+                      placeholder="Pesquisar cliente..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md mb-2"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => {
+                        e.stopPropagation();
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                        }
+                      }}
+                      autoComplete="off"
+                    />
+                  </div>
                   <SelectItem
                     value="default"
                     disabled

@@ -72,7 +72,7 @@ const PaidCreditPurchaseModal: React.FC<PaidCreditPurchaseModalProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-yellow-500 text-gray-900 hover:bg-yellow-400 rounded-md"
+                className="bg-blue-600 hover:bg-blue-700 rounded-md text-white"
               >
                 Salvar
               </Button>

@@ -1,4 +1,5 @@
 import { CreditPurchase } from "../entities/credit-purchase.entity";
+import { PaidMultipleReceivablesDto } from "../service/dtos/PaidMultiplePurchases.dto";
 
 export interface UpdateCreditPurchaseInput {
   id: string;
@@ -7,5 +8,12 @@ export interface UpdateCreditPurchaseInput {
 
 export interface PaidCreditPurchaseInput {
   id: string;
-  paymentDate: Date; // Corrigido para refletir o nome correto do campo
+  paymentDate: Date; 
+
 }
+
+export interface PaidMultiplesAccountsInput {
+  id: string;
+  data: PaidMultipleReceivablesDto;
+}
+

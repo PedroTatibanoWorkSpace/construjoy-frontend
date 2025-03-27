@@ -5,10 +5,12 @@ import {
   createCreditPurchase,
   updateCreditPurchase,
   deleteCreditPurchase,
-  paidAccount
+  paidAccount,
+  paidMultiplesAccounts
 } from '../creditPurchase.service';
 import { CreditPurchase } from '../../entities/credit-purchase.entity';
 import { UpdateCreditPurchaseInput, PaidCreditPurchaseInput } from '../../types/credit-purchase.type';
+import { PaidMultiplesAccountsInput } from '../../types/credit-purchase.type';
 
 export const useCreditPurchases = () => {
   return useQuery<CreditPurchase[]>('creditPurchases', findAllCreditPurchases);
@@ -58,4 +60,16 @@ export const useDeleteCreditPurchase = () => {
       queryClient.invalidateQueries('creditPurchases');
     },
   });
+};
+
+export const usePaidMultipleAccounts = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    ({ id, data }: PaidMultiplesAccountsInput) => paidMultiplesAccounts(id, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('creditPurchases');
+      },
+    }
+  );
 };
