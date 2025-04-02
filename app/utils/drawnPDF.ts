@@ -28,11 +28,10 @@ export function generateCustomerPDF(customer: Customer) {
   let totalPendente = 0;
 
   customer.receivables?.forEach((purchase) => {
-    if (purchase.paymentStatus === "Pendente") {
-      const statusText =
-        purchase.paymentStatus !== "Pendente" ? "Atrasado" : "Pendente";
+    if (purchase.paymentStatus && purchase.paymentStatus !== "Pago") {
+      const statusText = purchase.paymentStatus;
       const statusColor: [number, number, number] =
-        purchase.paymentStatus !== "Pendente" ? [255, 0, 0] : [153, 102, 0];
+        purchase.paymentStatus === "Atrasado" ? [255, 0, 0] : [153, 102, 0];
 
       doc.setFont("helvetica", "normal");
       doc.setTextColor(0, 0, 0);
