@@ -20,6 +20,10 @@ Um sistema web desenvolvido com Next.js para gerenciamento de crédito para clie
 - NPM ou Yarn
 - API de backend configurada e em execução
 
+## Midia da Aplicação
+
+https://github.com/PedroTatibanoWorkSpace/images/blob/main/ExemploDeUso.mp4
+
 ## 🔧 Instalação
 
 1. Clone o repositório:
