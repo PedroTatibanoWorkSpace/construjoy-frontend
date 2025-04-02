@@ -83,24 +83,6 @@ yarn start
 - Exportação de relatórios em PDF
 - Visão consolidada da situação financeira
 
-## 📁 Estrutura do Projeto
-construjoy-frontend/
-├── app/                  # Páginas e componentes específicos da aplicação
-│   ├── components/       # Componentes compartilhados da aplicação
-│   ├── credit-purchases/ # Módulo de compras a crédito
-│   ├── customers/        # Módulo de gerenciamento de clientes
-│   ├── dashboard/        # Módulo de dashboard
-│   ├── reports/          # Módulo de relatórios
-│   └── utils/            # Funções utilitárias
-├── components/           # Componentes de UI reutilizáveis
-│   └── ui/               # Componentes de interface básicos
-├── hooks/                # Hooks personalizados
-├── lib/                  # Bibliotecas e funções utilitárias
-├── providers/            # Provedores de contexto
-├── public/               # Arquivos estáticos
-└── services/             # Serviços de API
-    └── api/              # Configuração e clientes API
-
 ## 📄 Fluxo de Trabalho
 - Dashboard: Visualize rapidamente a situação financeira atual
 - Clientes: Gerencie informações de clientes e seu histórico
