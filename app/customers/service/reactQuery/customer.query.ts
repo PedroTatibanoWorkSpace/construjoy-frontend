@@ -31,6 +31,9 @@ export const useCreateCustomer = () => {
   return useMutation(createCustomer, {
     onSuccess: () => {
       queryClient.invalidateQueries("customers");
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao criar cliente", error.message);
     }
   });
 };
@@ -42,6 +45,9 @@ export const useUpdateCustomer = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("customers");
+      },
+      onError: (error: any) => {
+        toast.error("Erro ao atualizar cliente", error.message);
       }
     }
   );
@@ -52,6 +58,9 @@ export const useDeleteCustomer = () => {
   return useMutation(deleteCustomer, {
     onSuccess: () => {
       queryClient.invalidateQueries("customers");
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao excluir cliente", error.message);
     }
   });
 };

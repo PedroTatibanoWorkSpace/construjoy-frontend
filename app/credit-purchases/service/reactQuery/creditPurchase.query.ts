@@ -11,6 +11,7 @@ import {
 import { CreditPurchase } from '../../entities/credit-purchase.entity';
 import { UpdateCreditPurchaseInput, PaidCreditPurchaseInput } from '../../types/credit-purchase.type';
 import { PaidMultiplesAccountsInput } from '../../types/credit-purchase.type';
+import { toast } from '@/hooks/use-toast';
 
 export const useCreditPurchases = () => {
   return useQuery<CreditPurchase[]>('creditPurchases', findAllCreditPurchases);
@@ -26,6 +27,9 @@ export const useCreateCreditPurchase = () => {
     onSuccess: () => {
       queryClient.invalidateQueries('creditPurchases');
     },
+    onError: (error: any) => {
+      toast.error("Erro ao criar compra", error.message);
+    }
   });
 };
 
@@ -37,6 +41,9 @@ export const usePaidAccount = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('creditPurchases');
       },
+      onError: (error: any) => {
+        toast.error("Erro ao registrar pagamento", error.message);
+      }
     }
   );
 };
@@ -49,6 +56,9 @@ export const useUpdateCreditPurchase = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('creditPurchases');
       },
+      onError: (error: any) => {
+        toast.error("Erro ao atualizar compra", error.message);
+      }
     }
   );
 };
@@ -59,6 +69,9 @@ export const useDeleteCreditPurchase = () => {
     onSuccess: () => {
       queryClient.invalidateQueries('creditPurchases');
     },
+    onError: (error: any) => {
+      toast.error("Erro ao excluir compra", error.message);
+    }
   });
 };
 
@@ -70,6 +83,9 @@ export const usePaidMultipleAccounts = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('creditPurchases');
       },
+      onError: (error: any) => {
+        toast.error("Erro ao registrar múltiplos pagamentos", error.message);
+      }
     }
   );
 };
