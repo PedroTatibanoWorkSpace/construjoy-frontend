@@ -1,21 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  MagnifyingGlassIcon,
-  DocumentArrowDownIcon,
-} from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 import { generateCustomerPDF } from "@/app/utils/drawnPDF";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useCustomers } from "@/app/customers/service/reactQuery/customer.query";
+import { StandardPagination } from "@/app/components/Pagination";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ReportList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,13 +26,19 @@ export default function ReportList() {
     startIndex + itemsPerPage
   );
 
-  const handlePrevPage = () => setCurrentPage(Math.max(1, currentPage - 1));
-  const handleNextPage = () =>
-    setCurrentPage(Math.min(totalPages, currentPage + 1));
-
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
-      <div className="flex items-center space-x-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg"
+    >
+      <motion.div 
+        initial={{ y: -10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center space-x-4"
+      >
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
@@ -56,9 +54,14 @@ export default function ReportList() {
             }}
           />
         </div>
-      </div>
+      </motion.div>
 
-      <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="rounded-lg shadow-md overflow-hidden border border-gray-700"
+      >
         <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
             <TableRow className="bg-gray-700">
@@ -77,74 +80,70 @@ export default function ReportList() {
             {paginatedCustomers.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={2}
+                  colSpan={3}
                   className="text-center py-4 text-gray-400"
                 >
                   Nenhum cliente encontrado.
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedCustomers.map((customer) => (
-                <TableRow
-                  key={customer.id}
-                  className="hover:bg-gray-700 transition-colors duration-150"
-                >
-                  <TableCell className="px-4 py-3">{customer.name}</TableCell>
-                  <TableCell className="px-4 py-3">
-                    {customer.document}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {customer.receivables &&
-                    customer.receivables.filter(
-                      (receivable) =>
-                        receivable.paymentStatus !== "Pago"
-                    ).length > 0 ? (
-                      <Button
-                        title="Gerar PDF"
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                        onClick={() => generateCustomerPDF(customer)}
-                      >
-                        <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
-                        Gerar Relatório <br />
-                        de Débitos
-                      </Button>
-                    ) : (
-                      <span className="text-gray-500">
-                        Sem Débitos Pendentes
-                      </span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
+              <AnimatePresence>
+                {paginatedCustomers.map((customer, index) => (
+                  <motion.tr
+                    key={customer.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className="hover:bg-gray-700 transition-colors duration-150"
+                  >
+                    <TableCell className="px-4 py-3">{customer.name}</TableCell>
+                    <TableCell className="px-4 py-3">
+                      {customer.document}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {customer.receivables &&
+                      customer.receivables.filter(
+                        (receivable) =>
+                          receivable.paymentStatus && receivable.paymentStatus !== "Pago"
+                      ).length > 0 ? (
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button
+                            title="Gerar PDF"
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform"
+                            onClick={() => generateCustomerPDF(customer)}
+                          >
+                            <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
+                            Gerar Relatório <br />
+                            de Débitos
+                          </Button>
+                        </motion.div>
+                      ) : (
+                        <span className="text-gray-500">
+                          Sem Débitos Pendentes
+                        </span>
+                      )}
+                    </TableCell>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             )}
           </TableBody>
         </Table>
-      </div>
+      </motion.div>
 
-      {totalPages > 1 && (
-        <div className="px-6 py-4 flex items-center justify-between border-t border-gray-700">
-          <Button
-            variant="outline"
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className="bg-gray-700 text-white hover:bg-gray-600 transition-colors rounded-l-lg px-3 py-2"
-          >
-            Anterior
-          </Button>
-          <span className="text-gray-300">
-            Página {currentPage} de {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="bg-gray-700 text-white hover:bg-gray-600 transition-colors rounded-r-lg px-3 py-2"
-          >
-            Próxima
-          </Button>
-        </div>
-      )}
-    </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <StandardPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </motion.div>
+    </motion.div>
   );
 }
