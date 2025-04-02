@@ -24,13 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
+import { StandardPagination } from "@/app/components/Pagination";
 import NewCreditPurchaseModal from "./modals/NewCreditPurchaseModal";
 import { DeleteModal } from "@/app/components/modals/DeleteModal";
 import { EditCreditPurchaseModal } from "./modals/EditCreditPurchaseModal";
@@ -38,6 +32,7 @@ import { CreditPurchase } from "../entities/credit-purchase.entity";
 import PaidCreditPurchaseModal from "./modals/PaidCreditPurchaseModal";
 import { usePaidAccount } from "../service/reactQuery/creditPurchase.query";
 import { toast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CreditPurchaseList() {
   const { data: purchases = [], isLoading } = useCreditPurchases();
@@ -174,7 +169,12 @@ export default function CreditPurchaseList() {
   );
 
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg"
+    >
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -188,16 +188,23 @@ export default function CreditPurchaseList() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button
-          onClick={handleOpenModal}
-          className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-        >
-          <PlusIcon className="h-5 w-5 mr-2" />
-          Nova Compra
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            onClick={handleOpenModal}
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-lg transition-transform"
+          >
+            <PlusIcon className="h-5 w-5 mr-2" />
+            Nova Compra
+          </Button>
+        </motion.div>
       </div>
 
-      <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
+      <motion.div 
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="rounded-lg shadow-md overflow-hidden border border-gray-700"
+      >
         <Table className="table-auto w-full bg-gray-800 text-white">
           <TableHeader>
             <TableRow className="bg-gray-700">
@@ -234,7 +241,9 @@ export default function CreditPurchaseList() {
                   colSpan={8}
                   className="text-center py-4 text-gray-400"
                 >
-                  Carregando...
+                  <div className="flex justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : paginatedPurchases.length === 0 ? (
@@ -247,141 +256,102 @@ export default function CreditPurchaseList() {
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedPurchases.map((purchase) => (
-                <TableRow
-                  key={purchase.id}
-                  className="hover:bg-gray-700 transition-colors duration-150"
-                >
-                  <TableCell className="px-4 py-3 break-words max-w-[600px]">
-                    {purchase.client?.name || ""}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 break-words max-w-[150px]">
-                    {purchase.description}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {formatCurrency(purchase.value)}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {formatDate(purchase.purchaseDate)}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {formatDate(purchase.validate)}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-lg font-medium ${getStatusClass(
-                        purchase.paymentStatus || ""
-                      )}`}
-                    >
-                      {purchase.paymentStatus || ""}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {purchase.paymentDate ? (
-                      <span className="inline-block px-2 py-0.5 bg-green-200 text-green-950 rounded-md">
-                        {formatDate(purchase.paymentDate)}
+              <AnimatePresence>
+                {paginatedPurchases.map((purchase, index) => (
+                  <motion.tr
+                    key={purchase.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className="hover:bg-gray-700 transition-colors duration-150"
+                  >
+                    <TableCell className="px-4 py-3 break-words max-w-[600px]">
+                      {purchase.client?.name || ""}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 break-words max-w-[150px]">
+                      {purchase.description}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {formatCurrency(purchase.value)}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {formatDate(purchase.purchaseDate)}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {formatDate(purchase.validate)}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-lg font-medium ${getStatusClass(
+                          purchase.paymentStatus || ""
+                        )}`}
+                      >
+                        {purchase.paymentStatus || ""}
                       </span>
-                    ) : (
-                      <span className="inline-block px-2 py-0.5 bg-gray-400 text-black rounded-md">
-                        Não pago
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex space-x-2">
-                      {purchase.paymentStatus !== "Pago" && (
-                        <Button
-                          title="Marcar como pago"
-                          size="sm"
-                          className="bg-gray-500 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
-                          onClick={() => handleOpenPaidCreditModal(purchase)}
-                        >
-                          <CurrencyDollarIcon className="h-4 w-4" />
-                        </Button>
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {purchase.paymentDate ? (
+                        <span className="inline-block px-2 py-0.5 bg-green-200 text-green-950 rounded-md">
+                          {formatDate(purchase.paymentDate)}
+                        </span>
+                      ) : (
+                        <span className="inline-block px-2 py-0.5 bg-gray-400 text-black rounded-md">
+                          Não pago
+                        </span>
                       )}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <div className="flex space-x-2">
+                        {purchase.paymentStatus !== "Pago" && (
+                          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                            <Button
+                              title="Marcar como pago"
+                              size="sm"
+                              className="bg-gray-500 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                              onClick={() => handleOpenPaidCreditModal(purchase)}
+                            >
+                              <CurrencyDollarIcon className="h-4 w-4" />
+                            </Button>
+                          </motion.div>
+                        )}
 
-                      <Button
-                        title="Editar compras"
-                        size="sm"
-                        className="bg-gray-700 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
-                        onClick={() => handleOpenEditModal(purchase)}
-                      >
-                        <PencilSquareIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        title="Excluir compras"
-                        variant="destructive"
-                        size="sm"
-                        className="bg-red-600 text-white hover:bg-red-500 px-3 py-1 rounded-md transition"
-                        onClick={() => handleOpenDeleteModal(purchase)}
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Button
+                            title="Editar compras"
+                            size="sm"
+                            className="bg-gray-700 text-white hover:bg-gray-600 px-3 py-1 rounded-md transition"
+                            onClick={() => handleOpenEditModal(purchase)}
+                          >
+                            <PencilSquareIcon className="h-4 w-4" />
+                          </Button>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Button
+                            title="Excluir compras"
+                            variant="destructive"
+                            size="sm"
+                            className="bg-red-600 text-white hover:bg-red-500 px-3 py-1 rounded-md transition"
+                            onClick={() => handleOpenDeleteModal(purchase)}
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </Button>
+                        </motion.div>
+                      </div>
+                    </TableCell>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             )}
           </TableBody>
         </Table>
-      </div>
+      </motion.div>
 
-      {totalPages > 1 && (
-        <Pagination className="flex justify-end">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={
-                  currentPage === 1
-                    ? undefined
-                    : () => setCurrentPage(currentPage - 1)
-                }
-                className={`${
-                  currentPage === 1
-                    ? "opacity-50 pointer-events-none"
-                    : "bg-gray-700 text-white hover:bg-gray-800"
-                } transition-colors rounded-l-lg px-3 py-2`}
-              >
-                Anterior
-              </PaginationPrevious>
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => {
-              const page = index + 1;
-              return (
-                <PaginationItem key={page}>
-                  <Button
-                    variant={currentPage === page ? "default" : "outline"}
-                    className={`${
-                      currentPage === page
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-700 text-white hover:bg-gray-600"
-                    } transition-colors px-3 py-2`}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Button>
-                </PaginationItem>
-              );
-            })}
-            <PaginationItem>
-              <PaginationNext
-                onClick={
-                  currentPage === totalPages
-                    ? undefined
-                    : () => setCurrentPage(currentPage + 1)
-                }
-                className={`${
-                  currentPage === totalPages
-                    ? "opacity-50 pointer-events-none"
-                    : "bg-gray-700 text-white hover:bg-gray-800"
-                } transition-colors rounded-r-lg px-3 py-2`}
-              >
-                Próxima
-              </PaginationNext>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      <StandardPagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <NewCreditPurchaseModal
         isOpen={isModalOpen}
@@ -405,6 +375,6 @@ export default function CreditPurchaseList() {
         creditPurchase={selectedPurchase}
         onAddCreditPurchase={handlePaidCreditPurchase}
       />
-    </div>
+    </motion.div>
   );
 }

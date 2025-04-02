@@ -33,8 +33,8 @@ export const paidMultiplesAccounts = async (
   id: string,
   data: PaidMultipleReceivablesDto
 ): Promise<CreditPurchase[]> => {
-  const response = await api.patch(`/receivables/paid-multiple/${id}`, data);
-  return response.data.data;
+    const response = await api.patch(`/receivables/paid-multiple/${id}`, data);
+    return response.data.data;
 };
 
 export const updateCreditPurchase = async (
