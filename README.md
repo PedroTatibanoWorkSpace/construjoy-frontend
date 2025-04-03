@@ -2,8 +2,6 @@
 
 Um sistema web desenvolvido com Next.js para gerenciamento de crédito para clientes, permitindo o controle eficiente de contas a receber e gestão de clientes.
 
-![ConstruJoy Dashboard](https://via.placeholder.com/800x400?text=ConstruJoy+Dashboard)
-
 ## 🚀 Tecnologias Utilizadas
 
 - [Next.js](https://nextjs.org/) - Framework React com renderização híbrida
