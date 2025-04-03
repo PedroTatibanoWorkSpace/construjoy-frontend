@@ -20,9 +20,9 @@ Um sistema web desenvolvido com Next.js para gerenciamento de crédito para clie
 - NPM ou Yarn
 - API de backend configurada e em execução
 
-## Midia da Aplicação
+## 📺 Demonstração da Aplicação
 
-https://github.com/PedroTatibanoWorkSpace/images/blob/main/ExemploDeUso.mp4
+[![ConstruControl - Demonstração](https://img.youtube.com/vi/lAqAmuZaTus/0.jpg)](https://www.youtube.com/watch?v=lAqAmuZaTus)
 
 ## 🔧 Instalação
 
