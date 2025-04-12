@@ -26,7 +26,7 @@ Um sistema web desenvolvido com Next.js para gerenciamento de crédito para clie
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/construjoy-frontend.git
+   git clone https://github.com/PedroTatibanoWorkSpace/construjoy-frontend.git
    cd construjoy-frontend
    ```
 
