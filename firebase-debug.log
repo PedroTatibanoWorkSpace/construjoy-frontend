@@ -1,0 +1,55 @@
+[debug] [2025-09-23T19:52:58.024Z] ----------------------------------------------------------------------
+[debug] [2025-09-23T19:52:58.026Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/a3jfkfzmr1h8lmk31a8fbchkg5sp12q9-firebase-tools-14.16.0/lib/node_modules/firebase-tools/lib/bin/firebase.js deploy --only hosting
+[debug] [2025-09-23T19:52:58.027Z] CLI Version:   14.16.0
+[debug] [2025-09-23T19:52:58.027Z] Platform:      linux
+[debug] [2025-09-23T19:52:58.027Z] Node Version:  v20.19.1
+[debug] [2025-09-23T19:52:58.027Z] Time:          Tue Sep 23 2025 19:52:58 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-09-23T19:52:58.028Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-23T19:52:58.420Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:52:58.421Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:52:58.425Z] >>> [apiv2][query] GET https://monospace-pa.googleapis.com/v1/workspaces/construjoy-frontend-43114767 [none]
+[debug] [2025-09-23T19:52:59.071Z] <<< [apiv2][status] GET https://monospace-pa.googleapis.com/v1/workspaces/construjoy-frontend-43114767 200
+[debug] [2025-09-23T19:52:59.072Z] <<< [apiv2][body] GET https://monospace-pa.googleapis.com/v1/workspaces/construjoy-frontend-43114767 {"workspaceId":"construjoy-frontend-43114767","name":"construjoy-frontend","workspaceRedirectUrl":"firebase-construjoy-frontend-1758651838634.cluster-zhw3w37rxzgkutusbbhib6qhra.cloudworkstations.dev","status":"WORKSPACE_STATUS_RUNNING","lastAccessDatetime":"2025-09-23T18:34:18.098469Z","workspaceTemplate":"WORKSPACE_TEMPLATE_BLANK_WEB","owner":"SELF","serviceAccountEmail":"msp-3684966185895153640@monospace-per-ws-sa-5.iam.gserviceaccount.com","gitRepoUrl":"https://github.com/PedroTatibanoWorkSpace/construjoy-frontend","enableNix":true,"ownerEmail":"rafaelporto.dev@gmail.com","workstationAccessToken":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Nsb3VkLmdvb2dsZS5jb20vd29ya3N0YXRpb25zIiwiYXVkIjoiZmlyZWJhc2UtY29uc3RydWpveS1mcm9udGVuZC0xNzU4NjUxODM4NjM0LmNsdXN0ZXItemh3M3czN3J4emdrdXR1c2JiaGliNnFocmEuY2xvdWR3b3Jrc3RhdGlvbnMuZGV2IiwiaWF0IjoxNzU4NjU3MTc5LCJleHAiOjE3NTg3NDM1Nzh9.dvGhK8CuSa-UmjuDyaRUtZRjiIDOkmQ7PhAKtSj9wJYjY_EFjP74q_K3Ylj9VNMLRlLELEU7Zo_-kKJ-PNWVzfeeeSM0wu3tsSiQ2IADGpKfULuEDZdGMVo4acQEG6MuuUgUHtFlqxH-uU0mdqmn962dJHq0O2q1Tfjt_kApYNiX9kyLRCdhuEWRQOxd77ajdclJFqQi7QSy2kjtQwr-GEkELzyLEAPOMkmO7c16tqUyADPwV9YjknNvvfbGz845G0HcgXNxaltWc0f-0NhpmMzL9Oi-MCD5WoDL9HMKELfZfFhiGCoQoSk3a34xSHzGetlLZ8NeeZwSNLkA_YCkXA","firebaseProjectId":"projeto-integrador-ii-2025"}
+[debug] [2025-09-23T19:52:59.075Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-09-23T19:52:59.076Z] > authorizing via signed-in user (rafaelporto.dev@gmail.com)
+[debug] [2025-09-23T19:52:59.077Z] [iam] checking project projeto-integrador-ii-2025 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-09-23T19:52:59.077Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:52:59.078Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:52:59.078Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions [none]
+[debug] [2025-09-23T19:52:59.078Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions x-goog-quota-user=projects/projeto-integrador-ii-2025
+[debug] [2025-09-23T19:52:59.078Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-23T19:52:59.141Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions 200
+[debug] [2025-09-23T19:52:59.142Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-23T19:52:59.143Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:52:59.143Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:52:59.143Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025 [none]
+[debug] [2025-09-23T19:52:59.328Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025 200
+[debug] [2025-09-23T19:52:59.329Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025 {"projectId":"projeto-integrador-ii-2025","projectNumber":"593327808152","displayName":"Projeto Integrador II 2025","name":"projects/projeto-integrador-ii-2025","resources":{"hostingSite":"projeto-integrador-ii-2025"},"state":"ACTIVE","etag":"1_863d728e-ae0e-4a11-8270-1c5e48bc0981"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2025-09-23T19:53:08.933Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:53:08.933Z] Checked if tokens are valid: true, expires at: 1758660303119
+[debug] [2025-09-23T19:53:08.934Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025 [none]
+[debug] [2025-09-23T19:53:09.087Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025 200
+[debug] [2025-09-23T19:53:09.087Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025 {"name":"projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025","defaultUrl":"https://projeto-integrador-ii-2025.web.app","type":"DEFAULT_SITE"}
+[info]   ▲ Next.js 14.2.26
+
+[info]   - Environments: .env.local
+
+[info] 
+
+[info]    Creating an optimized production build ...
+
+[info]  ✓ Compiled successfully
+
+[info]    Linting and checking validity of types ...
+
