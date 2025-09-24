@@ -8,12 +8,12 @@ const AuthGuard = () => {
 
   useEffect(() => {
     const loginURL = "https://studio--studio-5593614148-ea971.us-central1.hosted.app/";
-    const loginPath = '/';
+    //const loginPath = '/';
 
     // Se estivermos na página de login, não fazemos nada.
-    if (pathname === loginPath) {
-      return;
-    }
+    //if (pathname === loginPath) {
+    //  return;
+    //}
 
     const referrer = document.referrer;
     const loginOrigin = new URL(loginURL).origin;
