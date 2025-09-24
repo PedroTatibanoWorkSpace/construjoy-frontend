@@ -1,11 +1,10 @@
-"use client";
-import { useEffect } from 'react';
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Layout from "./components/Layout";
 import { Providers } from "./providers/Providers";
 import { Toaster } from "@/components/ui/toaster";
+import AuthGuard from "./components/AuthGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,21 +18,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    const loginURL = "https://studio--studio-5593614148-ea971.us-central1.hosted.app/";
-    if (window.top === window.self) {
-        if (document.referrer && !document.referrer.startsWith(loginURL)) {
-          window.location.href = loginURL;
-        }
-    }
-  }, []);
-
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
         className={`${inter.className} bg-gray-900 text-white`}
         suppressHydrationWarning
       >
+        <AuthGuard />
         <Layout>
           <Providers>
             {children}
