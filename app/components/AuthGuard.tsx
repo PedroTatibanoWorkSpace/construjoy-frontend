@@ -1,31 +1,43 @@
 "use client";
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 const AuthGuard = () => {
+  const pathname = usePathname();
+
   useEffect(() => {
     const loginURL = "https://studio--studio-5593614148-ea971.us-central1.hosted.app/";
-    
-    // Se não houver referenciador, é um acesso direto, então redireciona para o login.
-    if (!document.referrer) {
-        window.location.href = loginURL;
-        return;
+    const loginPath = '/';
+
+    // Se estivermos na página de login, não fazemos nada.
+    if (pathname === loginPath) {
+      return;
     }
 
-    try {
-        const referrerOrigin = new URL(document.referrer).origin;
-        const currentOrigin = window.location.origin;
+    const referrer = document.referrer;
+    const loginOrigin = new URL(loginURL).origin;
+    const currentOrigin = window.location.origin;
 
-        // Se o referenciador for de uma origem diferente E não for a página de login, redireciona.
-        if (referrerOrigin !== currentOrigin && new URL(loginURL).origin !== referrerOrigin) {
+    // Se houver um referenciador, verificamos se é do mesmo domínio ou do domínio de login.
+    if (referrer) {
+        try {
+            const referrerOrigin = new URL(referrer).origin;
+            if (referrerOrigin === currentOrigin || referrerOrigin === loginOrigin) {
+                // Permite a navegação se for do mesmo app ou vindo do login.
+                return;
+            }
+        } catch (e) {
+            // Se o referenciador for inválido, redireciona para o login por segurança.
             window.location.href = loginURL;
+            return;
         }
-    } catch (e) {
-        // Referenciador inválido ou vazio, redireciona para o login como medida de segurança.
-        window.location.href = loginURL;
     }
+    
+    // Se não houver referenciador válido ou se veio de um site externo, redireciona para o login.
+    window.location.href = loginURL;
 
-  }, []);
+  }, [pathname]);
 
   return null; // Este componente não renderiza nada.
 };
