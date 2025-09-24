@@ -1,3 +1,5 @@
+"use client";
+import { useEffect } from 'react';
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -17,6 +19,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    const loginURL = "https://studio--studio-5593614148-ea971.us-central1.hosted.app/";
+    if (window.top === window.self) {
+        if (document.referrer && !document.referrer.startsWith(loginURL)) {
+          window.location.href = loginURL;
+        }
+    }
+  }, []);
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body

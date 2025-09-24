@@ -1,0 +1,68 @@
+[debug] [2025-09-24T13:47:42.565Z] ----------------------------------------------------------------------
+[debug] [2025-09-24T13:47:42.569Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/a3jfkfzmr1h8lmk31a8fbchkg5sp12q9-firebase-tools-14.16.0/lib/node_modules/firebase-tools/lib/bin/firebase.js hosting:channel:deploy Teste_Login
+[debug] [2025-09-24T13:47:42.570Z] CLI Version:   14.16.0
+[debug] [2025-09-24T13:47:42.570Z] Platform:      linux
+[debug] [2025-09-24T13:47:42.570Z] Node Version:  v20.19.1
+[debug] [2025-09-24T13:47:42.571Z] Time:          Wed Sep 24 2025 13:47:42 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-09-24T13:47:42.571Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-24T13:47:43.086Z] Checked if tokens are valid: false, expires at: 1758660303119
+[debug] [2025-09-24T13:47:43.086Z] Checked if tokens are valid: false, expires at: 1758660303119
+[debug] [2025-09-24T13:47:43.087Z] > refreshing access token with scopes: []
+[debug] [2025-09-24T13:47:43.089Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-24T13:47:43.089Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-24T13:47:43.240Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-24T13:47:43.241Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-24T13:47:43.256Z] >>> [apiv2][query] GET https://monospace-pa.googleapis.com/v1/workspaces/construjoy-frontend-43114767 [none]
+[debug] [2025-09-24T13:47:43.855Z] <<< [apiv2][status] GET https://monospace-pa.googleapis.com/v1/workspaces/construjoy-frontend-43114767 200
+[debug] [2025-09-24T13:47:43.856Z] <<< [apiv2][body] GET https://monospace-pa.googleapis.com/v1/workspaces/construjoy-frontend-43114767 {"workspaceId":"construjoy-frontend-43114767","name":"construjoy-frontend","workspaceRedirectUrl":"firebase-construjoy-frontend-1758651838634.cluster-zhw3w37rxzgkutusbbhib6qhra.cloudworkstations.dev","status":"WORKSPACE_STATUS_RUNNING","lastAccessDatetime":"2025-09-24T13:40:45.158025Z","workspaceTemplate":"WORKSPACE_TEMPLATE_BLANK_WEB","owner":"SELF","serviceAccountEmail":"msp-3684966185895153640@monospace-per-ws-sa-5.iam.gserviceaccount.com","gitRepoUrl":"https://github.com/PedroTatibanoWorkSpace/construjoy-frontend","enableNix":true,"ownerEmail":"rafaelporto.dev@gmail.com","workstationAccessToken":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Nsb3VkLmdvb2dsZS5jb20vd29ya3N0YXRpb25zIiwiYXVkIjoiZmlyZWJhc2UtY29uc3RydWpveS1mcm9udGVuZC0xNzU4NjUxODM4NjM0LmNsdXN0ZXItemh3M3czN3J4emdrdXR1c2JiaGliNnFocmEuY2xvdWR3b3Jrc3RhdGlvbnMuZGV2IiwiaWF0IjoxNzU4NzIxNjYzLCJleHAiOjE3NTg4MDgwNjN9.lVXYQrw0T9ILDwRoAfF9BtSzWHCRfk3QJ8miqInAi4Y5-rQluQRrL_GL8F0pxAZpwIahGuue-8e3-a32EFInyn6Fo0R9rymmVAhSwwISAAMaCXUg2zj5YUEg7JagrDQYLNOH1V8pkaMRcNaj8IbzyBiAI7tywMNr031r6cE6mfR8Gi-UzS-Uslh09lXmZ4UWokfbTa-qmVpt-QDlNe8iNd0PH0S1bBY3YGjDe1hrRVmTupGsKnl6t8j8CvL347Rb9zAQ-rR4vjKFa6nrbsD2VMEV6j73zKOKes-roGMBiaurasJC06zBzvigLb6CQ9S7-7zGNog_xiF_jaTK9FT59g","firebaseProjectId":"projeto-integrador-ii-2025"}
+[debug] [2025-09-24T13:47:43.858Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-09-24T13:47:43.858Z] > authorizing via signed-in user (rafaelporto.dev@gmail.com)
+[debug] [2025-09-24T13:47:43.859Z] [iam] checking project projeto-integrador-ii-2025 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-09-24T13:47:43.859Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:43.859Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:43.860Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions [none]
+[debug] [2025-09-24T13:47:43.860Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions x-goog-quota-user=projects/projeto-integrador-ii-2025
+[debug] [2025-09-24T13:47:43.860Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-24T13:47:43.920Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions 200
+[debug] [2025-09-24T13:47:43.920Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/projeto-integrador-ii-2025:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-24T13:47:43.922Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:43.922Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:43.922Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025 [none]
+[debug] [2025-09-24T13:47:44.158Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025 200
+[debug] [2025-09-24T13:47:44.159Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025 {"projectId":"projeto-integrador-ii-2025","projectNumber":"593327808152","displayName":"Projeto Integrador II 2025","name":"projects/projeto-integrador-ii-2025","resources":{"hostingSite":"projeto-integrador-ii-2025"},"state":"ACTIVE","etag":"1_863d728e-ae0e-4a11-8270-1c5e48bc0981"}
+[debug] [2025-09-24T13:47:44.162Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:44.163Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:44.163Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login [none]
+[debug] [2025-09-24T13:47:44.274Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login 404
+[debug] [2025-09-24T13:47:44.274Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login {"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}}
+[debug] [2025-09-24T13:47:44.276Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:44.277Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:47:44.277Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels?channelId=Teste-Login [none]
+[debug] [2025-09-24T13:47:44.277Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels?channelId=Teste-Login {"ttl":"604800s"}
+[debug] [2025-09-24T13:47:44.375Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels?channelId=Teste-Login 200
+[debug] [2025-09-24T13:47:44.375Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels?channelId=Teste-Login {"name":"projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login","url":"https://projeto-integrador-ii-2025--teste-login-t139peb3.web.app","createTime":"2025-09-24T13:47:44.335397864Z","updateTime":"2025-09-24T13:47:44.335397864Z","retainedReleaseCount":10,"expireTime":"2025-10-01T13:47:44.335397864Z"}
+[debug] [2025-09-24T13:47:44.376Z] [hosting] created new channnel for site projeto-integrador-ii-2025 {"name":"projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login","url":"https://projeto-integrador-ii-2025--teste-login-t139peb3.web.app","createTime":"2025-09-24T13:47:44.335397864Z","updateTime":"2025-09-24T13:47:44.335397864Z","retainedReleaseCount":10,"expireTime":"2025-10-01T13:47:44.335397864Z"}
+[info] ✔  hosting:channel: Channel Teste-Login has been created on site projeto-integrador-ii-2025. 
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2025-09-24T13:48:03.588Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:48:03.589Z] Checked if tokens are valid: true, expires at: 1758725262241
+[debug] [2025-09-24T13:48:03.589Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login [none]
+[debug] [2025-09-24T13:48:03.687Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login 200
+[debug] [2025-09-24T13:48:03.688Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login {"name":"projects/projeto-integrador-ii-2025/sites/projeto-integrador-ii-2025/channels/Teste-Login","url":"https://projeto-integrador-ii-2025--teste-login-t139peb3.web.app","createTime":"2025-09-24T13:47:44.335397864Z","updateTime":"2025-09-24T13:47:44.335397864Z","retainedReleaseCount":10,"expireTime":"2025-10-01T13:47:44.335397864Z"}
+[info]   ▲ Next.js 14.2.26
+
+[info]   - Environments: .env.local
+
+
+[info]    Creating an optimized production build ...
+
