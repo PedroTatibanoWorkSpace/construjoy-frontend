@@ -20,9 +20,12 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-gray-900 text-white`}
+        className={`${inter.className} bg-gray-950 text-white`}
         suppressHydrationWarning
       >
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-blue-600 focus:text-white focus:rounded-md focus:m-2">
+          Pular para conteúdo principal
+        </a>
         <Layout>
           <Providers>
             {children}

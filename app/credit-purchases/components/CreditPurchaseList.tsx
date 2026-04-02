@@ -173,7 +173,7 @@ export default function CreditPurchaseList() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg"
+      className="space-y-5"
     >
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
@@ -203,35 +203,19 @@ export default function CreditPurchaseList() {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.1 }}
-        className="rounded-lg shadow-md overflow-hidden border border-gray-700"
       >
-        <Table className="table-auto w-full bg-gray-800 text-white">
+        <Table>
+          <caption className="sr-only">Lista de compras a crédito</caption>
           <TableHeader>
-            <TableRow className="bg-gray-700">
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Cliente
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Descrição
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Valor
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Data da compra
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Validade
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Status
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Data do Pagamento
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Ações
-              </TableHead>
+            <TableRow>
+              <TableHead>Cliente</TableHead>
+              <TableHead>Descrição</TableHead>
+              <TableHead>Valor</TableHead>
+              <TableHead>Data Compra</TableHead>
+              <TableHead>Vencimento</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Pagamento</TableHead>
+              <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

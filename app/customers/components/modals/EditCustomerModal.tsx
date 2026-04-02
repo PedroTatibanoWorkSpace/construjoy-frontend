@@ -17,23 +17,15 @@ interface EditCustomerModalProps {
 
 export function EditCustomerModal({ isOpen, onClose, customer, onSave }: EditCustomerModalProps) {
   const [formData, setFormData] = useState<Omit<Customer, "createdAt" | "status">>({
-    id: "",
-    name: "",
-    email: "",
-    phone: "",
-    document: "",
+    id: "", name: "", email: "", phone: "", document: "",
   });
-
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
 
   useEffect(() => {
     if (customer) {
       setFormData({
-        id: customer.id || "",
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        document: customer.document,
+        id: customer.id || "", name: customer.name,
+        email: customer.email, phone: customer.phone, document: customer.document,
       });
     }
   }, [customer]);
@@ -46,10 +38,7 @@ export function EditCustomerModal({ isOpen, onClose, customer, onSave }: EditCus
 
   const handleSave = () => {
     const result = customerSchema.safeParse(formData);
-    if (!result.success) {
-      setErrors(result.error.issues);
-      return;
-    }
+    if (!result.success) { setErrors(result.error.issues); return; }
     onSave(formData);
   };
 
@@ -60,84 +49,47 @@ export function EditCustomerModal({ isOpen, onClose, customer, onSave }: EditCus
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 text-gray-100 rounded-lg">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-gray-100">Editar Cliente</DialogTitle>
+          <DialogTitle>Editar Cliente</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label className="text-sm text-gray-300">Nome</Label>
-            <Input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-            />
-            {getErrorMessage("name") && (
-              <p className="text-red-500 text-xs mt-1">{getErrorMessage("name")}</p>
-            )}
+            <Label className="text-sm text-gray-400 mb-1.5 block">Nome</Label>
+            <Input name="name" value={formData.name} onChange={handleChange} />
+            {getErrorMessage("name") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("name")}</p>}
           </div>
-
           <div>
-            <Label className="text-sm text-gray-300">Email</Label>
-            <Input
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-            />
-            {getErrorMessage("email") && (
-              <p className="text-red-500 text-xs mt-1">{getErrorMessage("email")}</p>
-            )}
+            <Label className="text-sm text-gray-400 mb-1.5 block">Email</Label>
+            <Input name="email" value={formData.email} onChange={handleChange} />
+            {getErrorMessage("email") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("email")}</p>}
           </div>
-
           <div>
-            <Label className="text-sm text-gray-300">Telefone</Label>
+            <Label className="text-sm text-gray-400 mb-1.5 block">Telefone</Label>
             <InputMask
               mask="(99) 99999-9999"
               value={formData.phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-            >
-              {(inputProps) => (
-                <Input
-                  {...inputProps}
-                  className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-                />
-              )}
-            </InputMask>
-            {getErrorMessage("phone") && (
-              <p className="text-red-500 text-xs mt-1">{getErrorMessage("phone")}</p>
-            )}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+              className="flex h-10 w-full rounded-xl border border-gray-800 bg-gray-900/80 px-3.5 py-2 text-sm text-white shadow-sm transition-all placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:border-blue-500/40"
+            />
+            {getErrorMessage("phone") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("phone")}</p>}
           </div>
-
           <div>
-            <Label className="text-sm text-gray-300">Documento</Label>
+            <Label className="text-sm text-gray-400 mb-1.5 block">Documento</Label>
             <InputMask
               mask="999.999.999-99"
               value={formData.document}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFormData({ ...formData, document: e.target.value })
-              }
-            >
-              {(inputProps) => (
-                <Input
-                  {...inputProps}
-                  className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-                />
-              )}
-            </InputMask>
-            {getErrorMessage("document") && (
-              <p className="text-red-500 text-xs mt-1">{getErrorMessage("document")}</p>
-            )}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, document: e.target.value })}
+              className="flex h-10 w-full rounded-xl border border-gray-800 bg-gray-900/80 px-3.5 py-2 text-sm text-white shadow-sm transition-all placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:border-blue-500/40"
+            />
+            {getErrorMessage("document") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("document")}</p>}
           </div>
         </div>
-        <DialogFooter className="flex justify-end space-x-2">
-          <Button variant="secondary" onClick={onClose} className="bg-gray-700 text-gray-100 hover:bg-gray-600 rounded-md">
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} className="text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl">
             Cancelar
           </Button>
-          <Button onClick={handleSave} className="bg-blue-600 text-white hover:bg-blue-500 rounded-md">
+          <Button onClick={handleSave} className="bg-blue-600 text-white hover:bg-blue-500 rounded-xl shadow-lg shadow-blue-600/20">
             Salvar
           </Button>
         </DialogFooter>

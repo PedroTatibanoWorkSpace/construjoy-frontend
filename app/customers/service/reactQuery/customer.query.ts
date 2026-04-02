@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   findAllCustomers,
   findOneCustomer,
@@ -11,56 +11,54 @@ import { UpdateCustomerInput } from "../../types/customer.type";
 import { toast } from "@/hooks/use-toast";
 
 export const useCustomers = () => {
-  return useQuery<Customer[]>("customers", findAllCustomers, {
-    onError: (error: any) => {
-      toast.error("Erro ao carregar clientes", error?.message || "Não foi possível carregar a lista de clientes.");
-    }
+  return useQuery<Customer[]>({
+    queryKey: ["customers"],
+    queryFn: findAllCustomers,
   });
 };
 
 export const useCustomer = (id: string) => {
-  return useQuery<Customer>(["customer", id], () => findOneCustomer(id), {
-    onError: (error: any) => {
-      toast.error("Erro ao carregar cliente", error?.message || "Não foi possível carregar os detalhes do cliente.");
-    }
+  return useQuery<Customer>({
+    queryKey: ["customer", id],
+    queryFn: () => findOneCustomer(id),
   });
 };
 
 export const useCreateCustomer = () => {
   const queryClient = useQueryClient();
-  return useMutation(createCustomer, {
+  return useMutation({
+    mutationFn: createCustomer,
     onSuccess: () => {
-      queryClient.invalidateQueries("customers");
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
     },
     onError: (error: any) => {
       toast.error("Erro ao criar cliente", error.message);
-    }
+    },
   });
 };
 
 export const useUpdateCustomer = () => {
   const queryClient = useQueryClient();
-  return useMutation(
-    ({ id, data }: UpdateCustomerInput) => updateCustomer(id, data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("customers");
-      },
-      onError: (error: any) => {
-        toast.error("Erro ao atualizar cliente", error.message);
-      }
-    }
-  );
+  return useMutation({
+    mutationFn: ({ id, data }: UpdateCustomerInput) => updateCustomer(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao atualizar cliente", error.message);
+    },
+  });
 };
 
 export const useDeleteCustomer = () => {
   const queryClient = useQueryClient();
-  return useMutation(deleteCustomer, {
+  return useMutation({
+    mutationFn: deleteCustomer,
     onSuccess: () => {
-      queryClient.invalidateQueries("customers");
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
     },
     onError: (error: any) => {
       toast.error("Erro ao excluir cliente", error.message);
-    }
+    },
   });
 };

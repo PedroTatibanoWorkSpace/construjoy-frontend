@@ -172,7 +172,7 @@ export default function CustomerList() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6 p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg"
+      className="space-y-5"
     >
       <div className="flex items-center space-x-4">
         <div className="flex-1 relative">
@@ -202,28 +202,16 @@ export default function CustomerList() {
         </motion.div>
       </div>
 
-      <div className="rounded-lg shadow-md overflow-hidden border border-gray-700">
-        <Table className="table-auto w-full bg-gray-800 text-white">
+      <Table>
+          <caption className="sr-only">Lista de clientes</caption>
           <TableHeader>
-            <TableRow className="bg-gray-700">
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Nome
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                CPF
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Telefone
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Email
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Data de Cadastro
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left text-gray-300">
-                Ações
-              </TableHead>
+            <TableRow>
+              <TableHead>Nome</TableHead>
+              <TableHead>CPF</TableHead>
+              <TableHead>Telefone</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Cadastro</TableHead>
+              <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -302,7 +290,6 @@ export default function CustomerList() {
             )}
           </TableBody>
         </Table>
-      </div>
 
       <StandardPagination 
         currentPage={currentPage}

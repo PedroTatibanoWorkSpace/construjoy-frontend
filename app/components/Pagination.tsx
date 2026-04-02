@@ -20,60 +20,69 @@ export function StandardPagination({
   onPageChange,
 }: PaginationProps) {
   const handlePrevPage = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
+    if (currentPage > 1) onPageChange(currentPage - 1);
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-    }
+    if (currentPage < totalPages) onPageChange(currentPage + 1);
   };
 
   if (totalPages <= 1) return null;
 
+  // Show max 5 page buttons with ellipsis logic
+  const getPageNumbers = () => {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+    if (end - start < maxVisible - 1) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  };
+
   return (
     <PaginationRoot className="flex justify-end">
-      <PaginationContent>
+      <PaginationContent className="gap-1">
         <PaginationItem>
           <PaginationPrevious
             onClick={currentPage === 1 ? undefined : handlePrevPage}
-            className={`${
+            className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
               currentPage === 1
-                ? "opacity-50 pointer-events-none"
-                : "bg-gray-700 text-white hover:bg-gray-800"
-            } transition-colors rounded-l-lg px-3 py-2`}
+                ? "opacity-40 pointer-events-none text-gray-500"
+                : "text-gray-300 hover:text-white hover:bg-white/[0.06]"
+            }`}
           >
             Anterior
           </PaginationPrevious>
         </PaginationItem>
-        {Array.from({ length: totalPages }).map((_, index) => {
-          const page = index + 1;
-          return (
-            <PaginationItem key={page}>
-              <Button
-                variant={currentPage === page ? "default" : "outline"}
-                className={`${
-                  currentPage === page
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 text-white hover:bg-gray-600"
-                } transition-colors px-3 py-2`}
-                onClick={() => onPageChange(page)}
-              >
-                {page}
-              </Button>
-            </PaginationItem>
-          );
-        })}
+
+        {getPageNumbers().map((page) => (
+          <PaginationItem key={page}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 w-8 rounded-lg text-sm transition-all ${
+                currentPage === page
+                  ? "bg-blue-600 text-white hover:bg-blue-600 shadow-md shadow-blue-600/20"
+                  : "text-gray-400 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              onClick={() => onPageChange(page)}
+            >
+              {page}
+            </Button>
+          </PaginationItem>
+        ))}
+
         <PaginationItem>
           <PaginationNext
             onClick={currentPage === totalPages ? undefined : handleNextPage}
-            className={`${
+            className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
               currentPage === totalPages
-                ? "opacity-50 pointer-events-none"
-                : "bg-gray-700 text-white hover:bg-gray-800"
-            } transition-colors rounded-r-lg px-3 py-2`}
+                ? "opacity-40 pointer-events-none text-gray-500"
+                : "text-gray-300 hover:text-white hover:bg-white/[0.06]"
+            }`}
           >
             Próxima
           </PaginationNext>

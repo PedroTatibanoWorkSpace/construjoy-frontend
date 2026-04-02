@@ -1,20 +1,8 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-  SelectItem,
-} from "@/components/ui/select";
+import { Select, SelectValue, SelectContent, SelectTrigger, SelectItem } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { CreditPurchase } from "../../entities/credit-purchase.entity";
 import { creditPurchaseSchema } from "../zod/CreditPurchaseSchema";
@@ -30,21 +18,11 @@ interface EditCreditPurchaseModalProps {
   onSave: (updatedCreditPurchase: Partial<CreditPurchase>) => void;
 }
 
-export function EditCreditPurchaseModal({
-  isOpen,
-  onClose,
-  creditPurchase,
-  onSave,
-}: EditCreditPurchaseModalProps) {
+export function EditCreditPurchaseModal({ isOpen, onClose, creditPurchase, onSave }: EditCreditPurchaseModalProps) {
   const [customerId, setCustomerId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState<Partial<CreditPurchase>>({
-    id: "",
-    clientId: "",
-    value: 0,
-    description: "",
-    validate: new Date(),
-    purchaseDate: new Date(),
+    id: "", clientId: "", value: 0, description: "", validate: new Date(), purchaseDate: new Date(),
   });
   const [displayValue, setDisplayValue] = useState<string>("");
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
@@ -53,70 +31,33 @@ export function EditCreditPurchaseModal({
   useEffect(() => {
     if (creditPurchase) {
       setFormData({
-        id: creditPurchase.id || "",
-        clientId: creditPurchase.clientId || "",
-        value: creditPurchase.value || 0,
-        description: creditPurchase.description || "",
-        validate: creditPurchase.validate instanceof Date ? 
-          creditPurchase.validate : 
-          new Date(creditPurchase.validate || ''),
-        purchaseDate: creditPurchase.purchaseDate instanceof Date ? 
-          creditPurchase.purchaseDate : 
-          new Date(creditPurchase.purchaseDate || ''),
+        id: creditPurchase.id || "", clientId: creditPurchase.clientId || "",
+        value: creditPurchase.value || 0, description: creditPurchase.description || "",
+        validate: creditPurchase.validate instanceof Date ? creditPurchase.validate : new Date(creditPurchase.validate || ''),
+        purchaseDate: creditPurchase.purchaseDate instanceof Date ? creditPurchase.purchaseDate : new Date(creditPurchase.purchaseDate || ''),
       });
-
       setCustomerId(creditPurchase.clientId || "");
-      setDisplayValue(
-        creditPurchase.value ? creditPurchase.value.toString() : ""
-      );
+      setDisplayValue(creditPurchase.value ? creditPurchase.value.toString() : "");
       setSearchTerm("");
     }
   }, [creditPurchase]);
 
-  const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCustomers = customers.filter((c) => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   if (!creditPurchase) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === "value" ? parseFloat(value) : value,
-    });
-  };
-
-  const handleCustomerChange = (value: string) => {
-    setCustomerId(value);
-    setFormData({ ...formData, clientId: value });
+    setFormData({ ...formData, [name]: name === "value" ? parseFloat(value) : value });
   };
 
   const handleSave = () => {
-    const numericValue = displayValue
-      ? parseFloat(displayValue.replace(/\./g, "").replace(",", "."))
-      : 0;
-
-    const purchaseDate = formData.purchaseDate instanceof Date 
-      ? formData.purchaseDate 
-      : new Date(formData.purchaseDate || '');
-    
-    const validate = formData.validate instanceof Date 
-      ? formData.validate 
-      : new Date(formData.validate || '');
-    
-    const preparedFormData = { 
-      ...formData, 
-      value: numericValue,
-      purchaseDate,
-      validate
-    };
-    
+    const numericValue = displayValue ? parseFloat(displayValue.replace(/\./g, "").replace(",", ".")) : 0;
+    const purchaseDate = formData.purchaseDate instanceof Date ? formData.purchaseDate : new Date(formData.purchaseDate || '');
+    const validate = formData.validate instanceof Date ? formData.validate : new Date(formData.validate || '');
+    const preparedFormData = { ...formData, value: numericValue, purchaseDate, validate };
     const result = creditPurchaseSchema.safeParse(preparedFormData);
-    if (!result.success) {
-      setErrors(result.error.issues);
-      return;
-    }
+    if (!result.success) { setErrors(result.error.issues); return; }
     onSave(preparedFormData);
   };
 
@@ -127,149 +68,55 @@ export function EditCreditPurchaseModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 text-gray-100 rounded-lg">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-gray-100">
-            Editar Compra de Crédito
-          </DialogTitle>
+          <DialogTitle>Editar Compra de Crédito</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label className="text-sm text-gray-300">Cliente</Label>
-            <Select
-              onValueChange={handleCustomerChange}
-              value={customerId || "default"}
-            >
-              <SelectTrigger className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md">
-                <SelectValue>
-                  {customerId
-                    ? customers.find((c) => c.id === customerId)?.name
-                    : "Selecione um cliente"}
-                </SelectValue>
+            <Label className="text-sm text-gray-400 mb-1.5 block">Cliente</Label>
+            <Select onValueChange={(v) => { setCustomerId(v); setFormData({ ...formData, clientId: v }); }} value={customerId || "default"}>
+              <SelectTrigger className="rounded-xl border-gray-800 bg-gray-900/80 text-white h-10">
+                <SelectValue>{customerId ? customers.find((c) => c.id === customerId)?.name : "Selecione um cliente"}</SelectValue>
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md">
+              <SelectContent className="bg-gray-900 border-gray-800 rounded-xl">
                 <div className="px-2 py-2">
-                  <Input
-                    placeholder="Pesquisar cliente..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md mb-2"
-                    onClick={(e) => e.stopPropagation()}
-                  />
+                  <Input placeholder="Pesquisar cliente..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="mb-2" onClick={(e) => e.stopPropagation()} />
                 </div>
-                <SelectItem value="default" disabled className="text-gray-500">
-                  Selecione um cliente
-                </SelectItem>
-                {filteredCustomers.map((customer) => (
-                  <SelectItem
-                    key={customer.id}
-                    value={customer.id || ""}
-                    className={`bg-gray-800 text-gray-100 hover:bg-gray-600 hover:text-gray-100 ${
-                      customerId === customer.id ? "bg-gray-600" : ""
-                    }`}
-                  >
-                    {customer.name}
-                  </SelectItem>
+                <SelectItem value="default" disabled className="text-gray-500">Selecione um cliente</SelectItem>
+                {filteredCustomers.map((c) => (
+                  <SelectItem key={c.id} value={c.id || ""} className="text-gray-200 focus:bg-white/[0.06] focus:text-white">{c.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {getErrorMessage("clientId") && (
-              <p className="text-red-500 text-xs mt-1">
-                {getErrorMessage("clientId")}
-              </p>
-            )}
+            {getErrorMessage("clientId") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("clientId")}</p>}
           </div>
-
           <div>
-            <Label className="text-sm text-gray-300">Valor</Label>
-            <CurrencyInput
-              intlConfig={{ locale: "pt-BR", currency: "BRL" }}
-              value={displayValue}
-              onValueChange={(value) => setDisplayValue(value || "")}
-              customInput={Input}
-              placeholder="R$ 0,00"
-              className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-              decimalsLimit={2}
-            />
-            {getErrorMessage("value") && (
-              <p className="text-red-500 text-xs mt-1">
-                {getErrorMessage("value")}
-              </p>
-            )}
+            <Label className="text-sm text-gray-400 mb-1.5 block">Valor</Label>
+            <CurrencyInput intlConfig={{ locale: "pt-BR", currency: "BRL" }} value={displayValue} onValueChange={(v) => setDisplayValue(v || "")} customInput={Input} placeholder="R$ 0,00" decimalsLimit={2} />
+            {getErrorMessage("value") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("value")}</p>}
           </div>
-
           <div>
-            <Label className="text-sm text-gray-300">Descrição</Label>
-            <Input
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-            />
-            {getErrorMessage("description") && (
-              <p className="text-red-500 text-xs mt-1">
-                {getErrorMessage("description")}
-              </p>
-            )}
+            <Label className="text-sm text-gray-400 mb-1.5 block">Descrição</Label>
+            <Input name="description" value={formData.description} onChange={handleChange} />
+            {getErrorMessage("description") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("description")}</p>}
           </div>
-
-          <div>
-            <Label className="text-sm text-gray-300">Data da Compra</Label>
-            <Input
-              name="purchaseDate"
-              type="date"
-              value={formatDateForEditInput(formData.purchaseDate)}
-              onChange={(e) => {
-                const newDate = e.target.value
-                  ? new Date(e.target.value)
-                  : new Date();
-                setFormData({ ...formData, purchaseDate: newDate });
-              }}
-              className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-            />
-            {getErrorMessage("purchaseDate") && (
-              <p className="text-red-500 text-xs mt-1">
-                {getErrorMessage("purchaseDate")}
-              </p>
-            )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm text-gray-400 mb-1.5 block">Data da Compra</Label>
+              <Input name="purchaseDate" type="date" value={formatDateForEditInput(formData.purchaseDate)} onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value ? new Date(e.target.value) : new Date() })} />
+              {getErrorMessage("purchaseDate") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("purchaseDate")}</p>}
+            </div>
+            <div>
+              <Label className="text-sm text-gray-400 mb-1.5 block">Vencimento</Label>
+              <Input name="validate" type="date" value={formatDateForEditInput(formData.validate)} onChange={(e) => setFormData({ ...formData, validate: e.target.value ? new Date(e.target.value) : new Date() })} />
+              {getErrorMessage("validate") && <p className="text-red-400 text-xs mt-1.5">{getErrorMessage("validate")}</p>}
+            </div>
           </div>
-
-          <div>
-            <Label className="text-sm text-gray-300">Data de vencimento</Label>
-            <Input
-              name="validate"
-              type="date"
-              value={formatDateForEditInput(formData.validate)}
-              onChange={(e) => {
-                const newDate = e.target.value
-                  ? new Date(e.target.value)
-                  : new Date();
-                setFormData({ ...formData, validate: newDate });
-              }}
-              className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md"
-            />
-            {getErrorMessage("validate") && (
-              <p className="text-red-500 text-xs mt-1">
-                {getErrorMessage("validate")}
-              </p>
-            )}
-          </div>
-
         </div>
-        <DialogFooter className="flex justify-end space-x-2">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            className="bg-gray-700 text-gray-100 hover:bg-gray-600 rounded-md"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSave}
-            className="bg-blue-600 text-white hover:bg-blue-800 rounded-md"
-          >
-            Salvar
-          </Button>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} className="text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl">Cancelar</Button>
+          <Button onClick={handleSave} className="bg-blue-600 text-white hover:bg-blue-500 rounded-xl shadow-lg shadow-blue-600/20">Salvar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
